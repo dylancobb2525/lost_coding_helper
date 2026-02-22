@@ -1,0 +1,14 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1111111111",
+    "name": "First Steps",
+    "criteria": "Complete your first coding problem",
+    "badgeCategory": "Bronze"
+  },
+  {
+    "id": "a2b2c3d4-e5f6-7890-abcd-ef2222222222",
+    "name": "Streak Master",
+    "criteria": "Maintain a 7-day solving streak",
+    "badgeCategory": "Silver"
+  }
+]

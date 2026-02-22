@@ -1,0 +1,18 @@
+[
+  {
+    "id": "f1a2b3c4-d5e6-7890-abcd-at1111111111",
+    "questionId": "q1a2b3c4-d5e6-7890-abcd-q11111111111",
+    "filename": "diagram.png",
+    "fileType": "image/png",
+    "storageUrl": "https://storage.example.com/questions/q1/diagram.png",
+    "uploadedAt": "2026-02-18T10:00:00Z"
+  },
+  {
+    "id": "f2a2b3c4-d5e6-7890-abcd-at2222222222",
+    "questionId": "q2a2b3c4-d5e6-7890-abcd-q22222222222",
+    "filename": "constraints.pdf",
+    "fileType": "application/pdf",
+    "storageUrl": "https://storage.example.com/questions/q2/constraints.pdf",
+    "uploadedAt": "2026-02-19T11:30:00Z"
+  }
+]

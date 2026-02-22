@@ -1,0 +1,20 @@
+[
+  {
+    "id": "c1b2c3d4-e5f6-7890-abcd-cc1111111111",
+    "authorId": "b86f4811-28d4-484c-bc6e-b855a3959461",
+    "body": "Nice approach using a hash map here.",
+    "createdAt": "2026-02-20T14:30:00Z",
+    "updatedAt": "2026-02-20T14:30:00Z",
+    "questionId": "q1a2b3c4-d5e6-7890-abcd-q11111111111",
+    "solutionId": null
+  },
+  {
+    "id": "c2b2c3d4-e5f6-7890-abcd-cc2222222222",
+    "authorId": "fdc80997-f6ee-4fde-9b77-96084e466bdc",
+    "body": "Consider edge case when the array is empty.",
+    "createdAt": "2026-02-21T09:15:00Z",
+    "updatedAt": "2026-02-21T09:15:00Z",
+    "questionId": null,
+    "solutionId": "s1a2b3c4-d5e6-7890-abcd-s11111111111"
+  }
+]

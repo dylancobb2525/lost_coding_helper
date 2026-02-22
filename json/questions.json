@@ -1,0 +1,34 @@
+[
+  {
+    "id": "q1a2b3c4-d5e6-7890-abcd-q11111111111",
+    "title": "Two Sum",
+    "prompt": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+    "difficulty": "BEGINNER",
+    "topics": ["ALGORITHM/DATASTRUCTURE"],
+    "companyTags": ["APPLE", "MICROSOFT"],
+    "hints": ["Try using extra space to speed up the lookup.", "A hash map can map value -> index."],
+    "createdBy": "b86f4811-28d4-484c-bc6e-b855a3959461",
+    "createdAt": "2026-02-18T09:00:00Z",
+    "status": "PUBLISHED",
+    "voteCount": 24,
+    "solutions": ["s1a2b3c4-d5e6-7890-abcd-s11111111111", "s2a2b3c4-d5e6-7890-abcd-s22222222222"],
+    "comments": ["c1b2c3d4-e5f6-7890-abcd-cc1111111111"],
+    "attachments": ["f1a2b3c4-d5e6-7890-abcd-at1111111111"]
+  },
+  {
+    "id": "q2a2b3c4-d5e6-7890-abcd-q22222222222",
+    "title": "Valid Parentheses",
+    "prompt": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+    "difficulty": "INTERMEDIATE",
+    "topics": ["ALGORITHM/DATASTRUCTURE", "OOP"],
+    "companyTags": ["X", "MICROSOFT"],
+    "hints": ["Use a stack to match closing brackets with the most recent opening bracket."],
+    "createdBy": "b86f4811-28d4-484c-bc6e-b855a3959461",
+    "createdAt": "2026-02-19T10:00:00Z",
+    "status": "PUBLISHED",
+    "voteCount": 18,
+    "solutions": [],
+    "comments": [],
+    "attachments": ["f2a2b3c4-d5e6-7890-abcd-at2222222222"]
+  }
+]

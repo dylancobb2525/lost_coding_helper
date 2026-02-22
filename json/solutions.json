@@ -1,0 +1,26 @@
+[
+  {
+    "id": "s1a2b3c4-d5e6-7890-abcd-s11111111111",
+    "questionId": "q1a2b3c4-d5e6-7890-abcd-q11111111111",
+    "authorId": "b86f4811-28d4-484c-bc6e-b855a3959461",
+    "code": "def two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        if target - n in seen:\n            return [seen[target - n], i]\n        seen[n] = i",
+    "language": "Python",
+    "explanation": "Use a hash map to store value -> index. For each element, check if complement exists.",
+    "createdAt": "2026-02-19T16:00:00Z",
+    "updatedAt": "2026-02-19T16:00:00Z",
+    "voteCount": 8,
+    "comments": ["c2b2c3d4-e5f6-7890-abcd-cc2222222222"]
+  },
+  {
+    "id": "s2a2b3c4-d5e6-7890-abcd-s22222222222",
+    "questionId": "q1a2b3c4-d5e6-7890-abcd-q11111111111",
+    "authorId": "fdc80997-f6ee-4fde-9b77-96084e466bdc",
+    "code": "public int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int comp = target - nums[i];\n        if (map.containsKey(comp)) return new int[] { map.get(comp), i };\n        map.put(nums[i], i);\n    }\n    return null;\n}",
+    "language": "Java",
+    "explanation": "Same idea as Python: HashMap for value to index, look up complement.",
+    "createdAt": "2026-02-20T11:00:00Z",
+    "updatedAt": "2026-02-20T11:00:00Z",
+    "voteCount": 5,
+    "comments": []
+  }
+]
