@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "App",
+      "request": "launch",
+      "mainClass": "com.lost_coding_helper/com.lost_coding_helper.App",
+      "projectName": "lost_coding_helper"
+    },
+    {
+      "type": "java",
+      "name": "Launch App",
+      "request": "launch",
+      "mainClass": "com.lost_coding_helper.App",
+      "vmArgs": "--module-path \"${env:HOME}/.m2/repository/org/openjfx/javafx-base/21.0.1:${env:HOME}/.m2/repository/org/openjfx/javafx-controls/21.0.1:${env:HOME}/.m2/repository/org/openjfx/javafx-fxml/21.0.1:${env:HOME}/.m2/repository/org/openjfx/javafx-graphics/21.0.1\" --add-modules javafx.controls,javafx.fxml"
+    }
+  ]
+}
