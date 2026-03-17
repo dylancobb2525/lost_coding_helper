@@ -108,4 +108,35 @@ public class QuestionList {
         }
         return dataWriter.saveProblem(questions);
     }
+
+    /**
+     * Returns all questions that both:
+     *  - have at least one solution in the given language, and
+     *  - have the given difficulty.
+     */
+    public ArrayList<Question> getByLanguageAndDifficulty(String language, String difficulty) {
+        ArrayList<Question> results = new ArrayList<>();
+        if (language == null || language.isEmpty() ||
+            difficulty == null || difficulty.isEmpty()) {
+            return results;
+        }
+        String targetLang = language.toLowerCase();
+        String targetDiff = difficulty.toLowerCase();
+
+        for (Question q : questions) {
+            if (q.getDifficulty() == null ||
+                !q.getDifficulty().toLowerCase().equals(targetDiff) ||
+                q.getSolutions() == null) {
+                continue;
+            }
+
+            boolean hasLanguage = q.getSolutions().stream()
+                    .anyMatch(s -> s.getLanguage() != null && s.getLanguage().toLowerCase().equals(targetLang));
+
+            if (hasLanguage) {
+                results.add(q);
+            }
+        }
+        return results;
+    }
 }

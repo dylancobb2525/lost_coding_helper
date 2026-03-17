@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import com.model.DataLoader;
 import com.model.DataWriter;
+import com.model.LearningPlan;
 import com.model.Question;
 import com.model.QuestionList;
+import com.model.StudyPlanner;
 import com.model.UserList;
 
 public class ProblemApplication {
@@ -16,6 +18,7 @@ public class ProblemApplication {
     private DataWriter dataWriter;
     //private Leaderboard leaderboard;
     private User currentUser; // Track currently logged-in user (need to update uml )
+    private StudyPlanner studyPlanner;
 
     // Constructor to initialize all components
     public ProblemApplication() {
@@ -25,6 +28,7 @@ public class ProblemApplication {
         this.dataWriter = new DataWriter();
         // Set DataWriter for QuestionList so it can save
         this.questionList.setDataWriter(this.dataWriter);
+        this.studyPlanner = new StudyPlanner(this.questionList);
     }
 
     public User createAccount(String displayName, String username, String email, String password) {
@@ -58,7 +62,7 @@ public class ProblemApplication {
     }
 
     public boolean updateQuestion(Question question) {
-        return questionList.update(question);
+        return questionList.updateQuestion(question);
     }
 
     public boolean deleteQuestion(UUID questionId) {
@@ -118,5 +122,19 @@ public class ProblemApplication {
         boolean usersSaved = dataWriter.saveUsers(userList.getAll());
         boolean questionsSaved = dataWriter.saveProblem(questionList.getAll());
         return usersSaved && questionsSaved;
+    }
+
+    /**
+     * Creates a study plan for the given language and level.
+     * level: 1 = beginner, 2 = intermediate, 3 = advanced (conceptually).
+     * All levels currently map to the underlying "EASY" difficulty used
+     * by questions in this project.
+     * language: for example "Java", "C++", "Python".
+     */
+    public LearningPlan createStudyPlan(String language, int level) {
+        if (studyPlanner == null) {
+            studyPlanner = new StudyPlanner(questionList);
+        }
+        return studyPlanner.generatePlan(language, level);
     }
 }
