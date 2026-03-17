@@ -1,11 +1,10 @@
-package com.lost_coding_helper;
+package com.model;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.lost_coding_helper.enums.ActivityType;
-import com.model.Question;
+import com.model.enums.ActivityType;
 
 public class ProgressTracker {
     private List<Question> completedProblems;

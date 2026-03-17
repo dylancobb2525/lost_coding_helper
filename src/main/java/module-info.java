@@ -5,6 +5,6 @@ module com.lost_coding_helper {
 
     opens com.lost_coding_helper to javafx.fxml;
     exports com.lost_coding_helper;
-    exports com.lost_coding_helper.enums;
+    exports com.model.enums;
     exports com.model;
 }

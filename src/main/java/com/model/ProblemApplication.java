@@ -1,13 +1,7 @@
-package com.lost_coding_helper;
+package com.model;
 
 import java.util.ArrayList;
 import java.util.UUID;
-
-import com.model.DataLoader;
-import com.model.DataWriter;
-import com.model.Question;
-import com.model.QuestionList;
-import com.model.UserList;
 
 public class ProblemApplication {
     private UserList userList; 

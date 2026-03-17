@@ -1,4 +1,4 @@
-package com.lost_coding_helper.enums;
+package com.model.enums;
 
 public enum ActivityType {
     ATTEMPT,

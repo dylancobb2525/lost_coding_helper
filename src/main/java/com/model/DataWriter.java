@@ -11,8 +11,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.lost_coding_helper.User;
-
 /**
  * Writes users and questions to json files. Used for save and update.
  */

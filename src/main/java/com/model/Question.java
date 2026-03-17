@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.lost_coding_helper.Solution;
-import com.lost_coding_helper.enums.Topic;
+import com.model.enums.Topic;
 
 public class Question {
     private UUID id;

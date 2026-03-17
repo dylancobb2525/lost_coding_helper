@@ -1,12 +1,10 @@
-package com.lost_coding_helper;
+package com.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
-
-import com.model.Question;
 
 public abstract class User {
     protected UUID userId;

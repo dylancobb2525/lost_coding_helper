@@ -1,4 +1,4 @@
-package com.lost_coding_helper;
+package com.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
