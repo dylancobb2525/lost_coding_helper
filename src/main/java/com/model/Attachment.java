@@ -17,7 +17,11 @@ public class Attachment {
     }
 
     public Attachment(UUID id, UUID questionId, String filename, FileType fileType, String storageUrl, LocalDateTime uploadedAt) {
-        this.id = (id != null) ? id : UUID.randomUUID();
+        if (id != null) {
+            this.id = id; 
+        } else {
+            this.id = UUID.randomUUID();
+        }
         this.questionId = questionId;
         this.filename = filename;
         this.fileType = fileType;

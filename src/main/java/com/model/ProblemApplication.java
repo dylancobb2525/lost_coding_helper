@@ -46,19 +46,17 @@ public class ProblemApplication {
     }
 
     public void createQuestion(Question question) {
-        if (question != null) {
-            questionList.getAll().add(question);
-        }
+        questionList.addQuestion(question);
     }
 
     public boolean updateQuestion(Question question) {
-        return questionList.update(question);
+        return questionList.updateQuestion(question);
     }
 
     public boolean deleteQuestion(UUID questionId) {
         Question question = questionList.getById(questionId);
         if (question != null) {
-            return questionList.getAll().remove(question);
+            return questionList.deleteQuestion(question);
         }
         return false;
     }
