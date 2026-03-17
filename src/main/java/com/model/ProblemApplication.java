@@ -1,4 +1,4 @@
-package com.lost_coding_helper;
+package com.model;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -10,7 +10,6 @@ import com.model.Question;
 import com.model.QuestionList;
 import com.model.StudyPlanner;
 import com.model.UserList;
-
 public class ProblemApplication {
     private UserList userList; 
     private QuestionList questionList;
@@ -56,9 +55,7 @@ public class ProblemApplication {
     }
 
     public void createQuestion(Question question) {
-        if (question != null) {
-            questionList.getAll().add(question);
-        }
+        questionList.addQuestion(question);
     }
 
     public boolean updateQuestion(Question question) {
@@ -68,7 +65,7 @@ public class ProblemApplication {
     public boolean deleteQuestion(UUID questionId) {
         Question question = questionList.getById(questionId);
         if (question != null) {
-            return questionList.getAll().remove(question);
+            return questionList.deleteQuestion(question);
         }
         return false;
     }

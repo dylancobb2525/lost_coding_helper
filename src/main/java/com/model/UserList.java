@@ -3,8 +3,6 @@ package com.model;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.lost_coding_helper.User;
-
 /**
  * Holds the list of users. Load from json in constructor or call load(). Save to json with save().
  */

@@ -1,8 +1,7 @@
 package com.model;
 
 import com.model.Question;
-import com.lost_coding_helper.User;
-import com.lost_coding_helper.enums.Topic;
+import com.model.enums.Topic;
 
 import java.util.UUID;
 

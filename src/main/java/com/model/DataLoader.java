@@ -6,12 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.lost_coding_helper.User;
-import com.lost_coding_helper.enums.Topic;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import com.model.enums.Topic;
 
 /**
  * Loads users and questions from json files.
