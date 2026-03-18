@@ -102,7 +102,13 @@ public abstract class User {
     }
 
     public void setFavoriteProblems(ArrayList<Question> favorites) {
-
+        if (favoriteProblems != null) {
+            for (Question q : favorites){
+                if (q != null && !this.favoriteProblems.contains(q)){
+                    this.favoriteProblems.add(q);
+                }
+            }
+        }
     }
 
     public ArrayList<UUID> getAchievementIds() {
