@@ -1,7 +1,7 @@
 package com.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.model.enums.ActivityType;
@@ -9,10 +9,35 @@ import com.model.enums.ActivityType;
 public class ProgressTracker {
     private List<Question> completedProblems;
     private ArrayList<String> userActivities;
+    private int streak;
+    private LocalDate lastActiveDate;
 
     public ProgressTracker() {
         completedProblems = new ArrayList<>();
         userActivities = new ArrayList<>();
+        streak = 0;
+        lastActiveDate = null;
+    }
+
+    public void setStreak(int streak) {
+        this.streak = streak;
+    }
+
+    public void setLastActiveDate(LocalDate lastActiveDate) {
+        this.lastActiveDate = lastActiveDate;
+    }
+
+    public int getStreak() {
+        return streak;
+    }
+
+    public LocalDate getLastActiveDate() {
+        return lastActiveDate;
+    }
+
+    public void resetStreak() {
+        streak = 0;
+        lastActiveDate = null;
     }
 
     public void recordAttempt(Question problem) {
@@ -31,6 +56,7 @@ public class ProgressTracker {
             completedProblems.add(problem);
         }
         logActivity(ActivityType.COMPLETE, "Completed problem: " + problem.getTitle() + " in " + timeSpentSec + " seconds");
+        updateStreak();
     }
 
     public void logActivity(ActivityType activityType, String details) {
@@ -41,9 +67,19 @@ public class ProgressTracker {
         userActivities.add(activity);
     } 
 
-    public void updateStreak(Date activityDate) {
-        
-        // placeholder for strak logic in user 
+    public void updateStreak() {
+        LocalDate today = LocalDate.now();
+
+        if (lastActiveDate == null) {
+            streak = 1;
+        } else if (lastActiveDate.isEqual(today)) {
+            return;
+        } else if (lastActiveDate.isEqual(today.minusDays(1))) {
+            streak++;
+        } else {
+            streak = 1;
+        }
+        lastActiveDate = today;
     }
 
     public ArrayList<Question> getCompletedQuestionsByDifficulty() {
