@@ -19,8 +19,6 @@ public abstract class User {
     private int failedLoginCount;
     private LocalDateTime lastFailedLoginAt;
     private ArrayList<UUID> achievements;
-    private int streak;
-    private LocalDate lastActiveDate;
     private ArrayList<UUID> favoritedProblems; //UUID for JSON
     private ArrayList<Question> favoriteProblems; //Question list
     private ProgressTracker progressTracker;
@@ -41,8 +39,6 @@ public abstract class User {
         this.failedLoginCount = 0;
         this.lastFailedLoginAt = null;
         this.achievements = new ArrayList<>();
-        this.streak = 0;
-        this.lastActiveDate = null;
         this.favoritedProblems = new ArrayList<>();
         this.favoriteProblems = new ArrayList<>();
         this.progressTracker = new ProgressTracker();
@@ -86,11 +82,11 @@ public abstract class User {
     }
 
     public int getStreak() {
-        return streak;
+        return progressTracker.getStreak();
     }
 
     public LocalDate getLastActiveDate() {
-        return lastActiveDate;
+        return progressTracker.getLastActiveDate();
     }
 
     public ArrayList<Question> getFavoriteProblems() {
@@ -102,13 +98,7 @@ public abstract class User {
     }
 
     public void setFavoriteProblems(ArrayList<Question> favorites) {
-        if (favoriteProblems != null) {
-            for (Question q : favorites){
-                if (q != null && !this.favoriteProblems.contains(q)){
-                    this.favoriteProblems.add(q);
-                }
-            }
-        }
+
     }
 
     public ArrayList<UUID> getAchievementIds() {
@@ -122,7 +112,6 @@ public abstract class User {
     public ProgressTracker getProgressTracker() {
         return progressTracker;
     }
-
 
 
     public abstract boolean hasAccess(String feature);
@@ -168,7 +157,6 @@ public abstract class User {
         boolean match = ((hashedPassword != null) && hashedPassword.equals(password));
         if (match) {
             resetFailedLogin();
-            //we can add streak if we want for just logging in if so increaseStreak();
             return true;
         } else {
             incrementFailedLogin();
@@ -245,32 +233,6 @@ public abstract class User {
     public boolean isUsernameUnique(String username) { //should be done in user list
         return true;
     }
-
-    public void increaseStreak() {
-        LocalDate today = LocalDate.now();
-
-        if (lastActiveDate == null) {
-            streak = 1;
-        } else if (lastActiveDate.isEqual(today)) {
-            //does nothing
-        } else if (lastActiveDate.isEqual(today.minusDays(1))) {
-            streak++;
-        } else {
-            streak = 1;
-        }
-
-        lastActiveDate = today;
-    }
-
-    public void resetStreak() {
-        streak = 0;
-    }
-
-
-
-
-
-
 
 
 
