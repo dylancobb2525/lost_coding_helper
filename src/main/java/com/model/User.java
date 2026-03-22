@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * This represents a User which stores their information and progress.
+ * The class is abstract and allows for more specific types of users
+ */
 public abstract class User {
     protected UUID userId;
     protected Date joinDate;
@@ -165,6 +169,13 @@ public abstract class User {
         }
     }
 
+    /**
+     * This validates a login by checking the username and password against stored values.
+     * It will also check if the account is locked and will increment failed login attempts if the credentials are incorrect.
+     * @param username
+     * @param password
+     * @return
+     */
     public boolean validateCredentials(String username, String password) {
         if (isLocked) {
             return false;
@@ -213,6 +224,11 @@ public abstract class User {
         resetFailedLogin();
     }
 
+    /**
+     * changes the password if the old password is correct and new password meets all the requirements.
+     * @param oldPassword
+     * @param newPassword
+     */
     public void changePassword(String oldPassword, String newPassword) {
         if (oldPassword == null || newPassword == null) return;
 
@@ -256,7 +272,7 @@ public abstract class User {
         return hasUpper && hasLower && hasDigit;
     }
 
-    public boolean isUsernameUnique(String username) { //should be done in user list
+    public boolean isUsernameUnique(String username) { 
         return true;
     }
 

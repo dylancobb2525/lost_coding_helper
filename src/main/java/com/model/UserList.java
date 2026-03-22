@@ -28,6 +28,7 @@ public class UserList {
 
     /**
      * Adds a list of users (e.g. from init). Used when loading at startup.
+     * @param loadedUsers
      */
     public void addAll(ArrayList<User> loadedUsers) {
         if (loadedUsers != null) {
@@ -69,13 +70,20 @@ public class UserList {
         }
 
         String accountId = UUID.randomUUID().toString();
-        String hashedPassword = password; //hash password before storing?
+        String hashedPassword = password;
 
         User user = new Contributor(UUID.randomUUID(), displayName, accountId, e, u, hashedPassword);
         users.add(user);
         return user;
     }
 
+    /**
+     * This searches for user by username or email and if it matches then it is validated.
+     * If authentication works then then the user is returned otherwise null.
+     * @param usernameOrEmail
+     * @param password
+     * @return
+     */
     public User authenticate(String usernameOrEmail, String password) {
         if (usernameOrEmail == null || password == null) {
             return null;
