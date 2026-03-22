@@ -73,9 +73,12 @@ public class StudyPlanner {
     }
 
     private String mapLevelToDifficulty(int level) {
-        // Align with existing data, which currently uses "EASY" as difficulty.
-        // All levels map to "EASY" for now so planner can find questions.
-        return "EASY";
+        // level 1 = beginner -> EASY, level 2 = intermediate -> MEDIUM, level 3 = advanced -> MEDIUM
+        return switch (level) {
+            case 1 -> "EASY";
+            case 2, 3 -> "MEDIUM";
+            default -> "EASY";
+        };
     }
 
     private List<Question> selectQuestionsForLevel(String language, String difficulty, int level) {

@@ -1,7 +1,9 @@
 package com.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.model.enums.Topic;
@@ -27,6 +29,7 @@ public class ProblemApplicationUI {
         scenarioCreateAccountDuplicateUser();
         scenarioCreateAccountSuccessPublisher();
         scenarioSallyCreatesQuestionAndTwoSolutions();
+        scenarioJimmyBauerCompletesDailyTask();
     }
 
     /**
@@ -158,6 +161,128 @@ public class ProblemApplicationUI {
         if (stored != null) {
             System.out.println("Attached solution count: " + stored.getSolutions().size());
         }
+        problemApplication.saveAll();
+        problemApplication.logOut();
+        System.out.println();
+    }
+
+    /**
+     * Jimmy Bauer completes his daily challenge: logs in, gets study plan, reviews solutions,
+     * adds a comment, exports to file, searches for BST questions, marks completed, logs out.
+     */
+    private void scenarioJimmyBauerCompletesDailyTask() {
+        System.out.println("=== Jimmy Bauer Completes Daily Task ===");
+
+        User jimmy = problemApplication.createAccount(
+                "Jimmy Bauer",
+                "JimmyBauer",
+                "jimmy.bauer.lost247@example.com",
+                "JimmyPass1a");
+        if (jimmy == null) {
+            System.out.println("Jimmy account creation failed; skipping scenario.");
+            return;
+        }
+        jimmy.getProgressTracker().setStreak(8);
+        jimmy.getProgressTracker().setLastActiveDate(LocalDate.now().minusDays(1));
+        System.out.println("Jimmy Bauer created with streak 8, last active yesterday.");
+
+        problemApplication.logOut();
+        User loggedIn = problemApplication.login("JimmyBauer", "JimmyPass1a");
+        if (loggedIn == null) {
+            System.out.println("Jimmy login failed.");
+            return;
+        }
+        System.out.println("Jimmy logged in.");
+
+        LearningPlan plan = problemApplication.createStudyPlan("Java", 2);
+        Question dailyChallenge = null;
+        List<PlannerStep> steps = plan.getSteps();
+        if (!steps.isEmpty()) {
+            List<UUID> ids = steps.get(0).getQuestionIds();
+            if (!ids.isEmpty()) {
+                dailyChallenge = problemApplication.getQuestionById(ids.get(0));
+            }
+        }
+        if (dailyChallenge == null) {
+            System.out.println("No daily challenge found; skipping remainder of scenario.");
+            return;
+        }
+        System.out.println("Daily challenge: " + dailyChallenge.getTitle());
+
+        List<Solution> solutions = dailyChallenge.getSolutions();
+        if (solutions != null && solutions.size() >= 2) {
+            Solution second = solutions.get(1);
+            String comment = "Jimmy Bauer | " + LocalDate.now() + " | " + dailyChallenge.getTitle();
+            second.addComment(comment);
+            System.out.println("Jimmy added comment on second solution.");
+        }
+
+        String exportPath = "exported_daily_challenge.txt";
+        if (problemApplication.exportQuestionToFile(dailyChallenge, exportPath)) {
+            System.out.println("Exported question to " + exportPath);
+        } else {
+            System.out.println("Export failed.");
+        }
+
+        ArrayList<Topic> bstTopics = new ArrayList<>();
+        bstTopics.add(Topic.ALGORITHMS_DATASTRUCTURE);
+        Question bst1 = new Question(
+                UUID.randomUUID(),
+                "Validate Binary Search Tree",
+                "Given a binary tree, determine if it is a valid binary search tree.",
+                "MEDIUM",
+                bstTopics,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                loggedIn.getUserId(),
+                LocalDateTime.now(),
+                "PUBLISHED");
+        Question bst2 = new Question(
+                UUID.randomUUID(),
+                "Binary Search Tree to Doubly Linked List",
+                "Convert a BST to a sorted doubly linked list in-place.",
+                "MEDIUM",
+                new ArrayList<>(bstTopics),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                loggedIn.getUserId(),
+                LocalDateTime.now(),
+                "PUBLISHED");
+        Solution javaSol = new Solution(
+                UUID.randomUUID(),
+                bst1.getId(),
+                loggedIn.getUserId(),
+                "BST.java",
+                "Java",
+                "Java implementation",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                0);
+        bst1.addSolution(javaSol);
+        problemApplication.createQuestion(bst1);
+        bst2.addSolution(new Solution(
+                UUID.randomUUID(),
+                bst2.getId(),
+                loggedIn.getUserId(),
+                "BST2List.java",
+                "Java",
+                "Java implementation",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                0));
+        problemApplication.createQuestion(bst2);
+        System.out.println("Created 2 Binary Search Tree questions.");
+
+        ArrayList<Question> bstResults = problemApplication.searchQuestions("Binary Search Tree");
+        System.out.println("Search 'Binary Search Tree' returned " + bstResults.size() + " question(s).");
+        for (Question q : bstResults) {
+            System.out.println("  - " + q.getTitle());
+        }
+
+        problemApplication.markCompleted(dailyChallenge.getId(), 300);
+        System.out.println("Jimmy marked daily challenge completed (streak bumped to 9).");
+        problemApplication.logOut();
+        System.out.println("Jimmy logged out.");
         System.out.println();
     }
 

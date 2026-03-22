@@ -1,5 +1,9 @@
 package com.model;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,5 +147,58 @@ public class ProblemApplication {
     /** Convenience: aggregate stats (see {@link LeaderBoard#getStats()}). */
     public HashMap<String, Integer> getLeaderboardStats() {
         return getLeaderBoard().getStats();
+    }
+
+    /**
+     * Writes a formatted text representation of the question to a file for offline review.
+     * @param question the question to export; ignored if null
+     * @param filePath path for the output .txt file
+     * @return true if the file was written successfully
+     */
+    public boolean exportQuestionToFile(Question question, String filePath) {
+        if (question == null || filePath == null || filePath.isBlank()) {
+            return false;
+        }
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(Path.of(filePath)))) {
+            out.println("=== " + question.getTitle() + " ===");
+            out.println("Difficulty: " + question.getDifficulty());
+            out.println();
+            out.println("PROMPT:");
+            out.println(question.getPrompt() != null ? question.getPrompt() : "");
+            out.println();
+            if (question.getHints() != null && !question.getHints().isEmpty()) {
+                out.println("HINTS:");
+                for (String h : question.getHints()) {
+                    out.println("  - " + h);
+                }
+                out.println();
+            }
+            if (question.getSolutions() != null && !question.getSolutions().isEmpty()) {
+                out.println("SOLUTIONS:");
+                int i = 1;
+                for (Solution s : question.getSolutions()) {
+                    out.println("  Solution " + i + " (" + (s.getLanguage() != null ? s.getLanguage() : "") + "):");
+                    out.println("    File: " + (s.getCode() != null ? s.getCode() : "(none)"));
+                    out.println("    " + (s.getExplanation() != null ? s.getExplanation() : ""));
+                    if (s.getComments() != null && !s.getComments().isEmpty()) {
+                        for (String c : s.getComments()) {
+                            out.println("    Comment: " + c);
+                        }
+                    }
+                    out.println();
+                    i++;
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Searches questions by title (contains query, case-insensitive).
+     */
+    public ArrayList<Question> searchQuestions(String query) {
+        return questionList.search(query);
     }
 }
