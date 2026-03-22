@@ -6,6 +6,11 @@ import java.util.List;
 
 import com.model.enums.ActivityType;
 
+
+/**
+ * Tracks user progress such as completed problems, activities, and streaks. 
+ * Used to keep record of a users progress over time.
+ */
 public class ProgressTracker {
     private List<Question> completedProblems;
     private ArrayList<String> userActivities;
@@ -51,7 +56,6 @@ public class ProgressTracker {
         if (problem == null) {
             return;
         }
-        // Check if already completed to avoid duplicates
         if (!completedProblems.contains(problem)) {
             completedProblems.add(problem);
         }
@@ -59,6 +63,11 @@ public class ProgressTracker {
         updateStreak();
     }
 
+    /**
+     * adds new activity to the user activity. Combines activity type and details for a log entry.
+     * @param activityType
+     * @param details
+     */
     public void logActivity(ActivityType activityType, String details) {
         if (activityType == null || details == null) {
             return;
