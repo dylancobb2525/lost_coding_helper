@@ -28,8 +28,12 @@ public class DataLoader extends DataConstants {
             FileReader reader = new FileReader(resolveDataPath(USER_FILE_NAME));
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
-            JSONArray usersJSON = (JSONArray) jsonObject.get(USERS);
-            
+            JSONArray usersJSON = getJSONArray(jsonObject, USERS);
+            if (usersJSON == null) {
+                reader.close();
+                return users;
+            }
+
             for (int i = 0; i < usersJSON.size(); i++) {
                 JSONObject userJSON = (JSONObject) usersJSON.get(i);
                 UUID userId = parseUUID((String) userJSON.get(USER_ID));
@@ -62,8 +66,12 @@ public class DataLoader extends DataConstants {
             FileReader reader = new FileReader(resolveDataPath(QUESTION_FILE_NAME));
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
-            JSONArray questionsJSON = (JSONArray) jsonObject.get(QUESTIONS);
-            
+            JSONArray questionsJSON = getJSONArray(jsonObject, QUESTIONS);
+            if (questionsJSON == null) {
+                reader.close();
+                return questions;
+            }
+
             for (int i = 0; i < questionsJSON.size(); i++) {
                 JSONObject questionJSON = (JSONObject) questionsJSON.get(i);
                 UUID id = parseUUID((String) questionJSON.get(QUESTION_ID));
@@ -76,12 +84,12 @@ public class DataLoader extends DataConstants {
                 UUID createdBy = parseUUID((String) questionJSON.get(QUESTION_CREATED_BY));
                 LocalDateTime createdAt = parseDateTime((String) questionJSON.get(QUESTION_CREATED_AT));
                 String status = (String) questionJSON.get(QUESTION_STATUS);
-                Long voteCount = (Long) questionJSON.get(QUESTION_VOTE_COUNT);
+                int voteCount = parseVoteCount(questionJSON.get(QUESTION_VOTE_COUNT));
 
                 Question question = new Question(id, title, prompt, difficulty, topicsList, companyTagsList,
                         hintsList, createdBy, createdAt, status);
-                if (voteCount != null && voteCount > 0) {
-                    for (int v = 0; v < voteCount.intValue(); v++) {
+                if (voteCount > 0) {
+                    for (int v = 0; v < voteCount; v++) {
                         question.upvote(null);
                     }
                 }
@@ -94,6 +102,29 @@ public class DataLoader extends DataConstants {
         }
         
         return questions;
+    }
+
+    /** @return the array at key, or null if missing or wrong type (avoids NPE / ClassCastException). */
+    private static JSONArray getJSONArray(JSONObject root, String key) {
+        Object raw = root.get(key);
+        return raw instanceof JSONArray ? (JSONArray) raw : null;
+    }
+
+    /**
+     * JSON may store voteCount as Long, Integer, or other Number; plain cast to Long fails on Integer.
+     */
+    private static int parseVoteCount(Object raw) {
+        if (raw == null) {
+            return 0;
+        }
+        if (raw instanceof Number) {
+            return Math.max(0, ((Number) raw).intValue());
+        }
+        try {
+            return Math.max(0, Integer.parseInt(raw.toString().trim()));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     private static UUID parseUUID(String s) {
