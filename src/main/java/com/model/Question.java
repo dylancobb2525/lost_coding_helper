@@ -72,7 +72,9 @@ public class Question {
     }
 
     public void downvote(UUID userId) {
-        voteCount--;
+        if (voteCount > 0) {
+            voteCount--;
+        }
     }
 
     public void setPublicStatus(boolean publicStatus) {

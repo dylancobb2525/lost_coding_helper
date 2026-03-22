@@ -66,7 +66,9 @@ public class Solution {
     }
 
     public void downvote(UUID userId) {
-        voteCount--;
+        if (voteCount > 0) {
+            voteCount--;
+        }
     }
 
     public UUID getId() {

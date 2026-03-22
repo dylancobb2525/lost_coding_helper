@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * JavaFX App
@@ -27,8 +28,11 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        URL url = App.class.getResource(fxml + ".fxml");
+        if (url == null) {
+            throw new IllegalStateException("Missing FXML resource: " + fxml + ".fxml");
+        }
+        return new FXMLLoader(url).load();
     }
 
     public static void main(String[] args) {

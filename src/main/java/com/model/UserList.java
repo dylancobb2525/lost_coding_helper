@@ -43,7 +43,7 @@ public class UserList {
         String u = username.trim();
         String e = email.trim();
 
-        if (u.length() < 3 || u.length() > 25 || !u.matches ("[a-zA-Z0-9_]+")) {
+        if (u.length() < 3 || u.length() > 25 || !u.matches("[a-zA-Z0-9_]+")) {
             return null;
         }
 

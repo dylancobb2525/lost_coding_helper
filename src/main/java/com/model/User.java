@@ -97,8 +97,34 @@ public abstract class User {
         return favoritedProblems;
     }
 
+    /**
+     * Replaces favorites with the given list (null argument = no-op).
+     * Skips null questions or questions with null id; deduplicates by question id.
+     * Keeps {@link #favoritedProblems} in sync for JSON / id-based use.
+     */
     public void setFavoriteProblems(ArrayList<Question> favorites) {
-
+        if (favorites == null) {
+            return;
+        }
+        favoriteProblems.clear();
+        favoritedProblems.clear();
+        for (Question q : favorites) {
+            if (q == null || q.getId() == null) {
+                continue;
+            }
+            UUID id = q.getId();
+            boolean already = false;
+            for (Question existing : favoriteProblems) {
+                if (existing != null && id.equals(existing.getId())) {
+                    already = true;
+                    break;
+                }
+            }
+            if (!already) {
+                favoriteProblems.add(q);
+                favoritedProblems.add(id);
+            }
+        }
     }
 
     public ArrayList<UUID> getAchievementIds() {

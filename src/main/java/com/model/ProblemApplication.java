@@ -1,6 +1,8 @@
 package com.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import com.model.DataLoader;
@@ -9,13 +11,13 @@ import com.model.LearningPlan;
 import com.model.Question;
 import com.model.QuestionList;
 import com.model.StudyPlanner;
+import com.model.User;
 import com.model.UserList;
 public class ProblemApplication {
     private UserList userList; 
     private QuestionList questionList;
     private DataLoader dataLoader;
     private DataWriter dataWriter;
-    //private Leaderboard leaderboard;
     private User currentUser; // Track currently logged-in user (need to update uml )
     private StudyPlanner studyPlanner;
 
@@ -133,5 +135,22 @@ public class ProblemApplication {
             studyPlanner = new StudyPlanner(questionList);
         }
         return studyPlanner.generatePlan(language, level);
+    }
+
+    /**
+     * Snapshot of all users for leaderboard (by streak). A new instance each call so it matches the current UserList.
+     */
+    public LeaderBoard getLeaderBoard() {
+        return new LeaderBoard(userList.getAll());
+    }
+
+    /** Convenience: top {@code limit} users by streak. */
+    public List<User> getLeaderboardTopPerformers(int limit) {
+        return getLeaderBoard().getTopPerformers(limit);
+    }
+
+    /** Convenience: aggregate stats (see {@link LeaderBoard#getStats()}). */
+    public HashMap<String, Integer> getLeaderboardStats() {
+        return getLeaderBoard().getStats();
     }
 }
