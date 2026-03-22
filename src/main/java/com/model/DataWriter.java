@@ -139,6 +139,9 @@ public class DataWriter extends DataConstants {
                 if (targetId.equals(u.get(USER_ID))) {
                     JSONArray favIds = new JSONArray();
                     for (Question q : favorites) {
+                        if (q == null || q.getId() == null) {
+                            continue;
+                        }
                         favIds.add(q.getId().toString());
                     }
                     u.put("favoriteProblems", favIds);
@@ -154,7 +157,7 @@ public class DataWriter extends DataConstants {
     private JSONObject readJson(String path) {
         try (FileReader fr = new FileReader(path)) {
             Object parsed = new JSONParser().parse(fr);
-            return (JSONObject) parsed;
+            return parsed instanceof JSONObject ? (JSONObject) parsed : null;
         } catch (IOException | ParseException e) {
             return null;
         }
