@@ -6,19 +6,37 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Subclass of {@link User} for users who create and edit problems (UML: Contributor / Contributer).
- * Question changes are in-memory; persistence is via {@link QuestionList} / {@link DataWriter}.
+ *
+ * @author Christopher Feuchter
  */
 public class Contributor extends User {
 
+    /**
+     * Constructs a contributor with default  values given by the superclass.
+     */
     public Contributor() {
         super(null, null, null, null, null, null);
     }
 
+    /**
+     * Constructs a contributor with the given account fields.
+     *
+     * @param userId         
+     * @param displayName    
+     * @param accountId      
+     * @param email          
+     * @param hashedPassword 
+     */
     public Contributor(UUID userId, String displayName, String accountId, String email, String username, String hashedPassword) {
         super(userId, displayName, accountId, email, username, hashedPassword);
     }
 
+    /**
+     * Returns whether this contributor may use a named feature, based on simple checks.
+     *
+     * @param feature a feature name or description; null or blank means that it is false
+     * @return true if the feature string matches, otherwise false
+     */
     @Override
     public boolean hasAccess(String feature) {
         if (feature == null || feature.trim().isEmpty()) {
@@ -43,32 +61,49 @@ public class Contributor extends User {
         return false;
     }
 
+    /**
+     * @return true; contributors may submit solutions
+     */
     @Override
     public boolean canSubmitSolutions() {
         return true;
     }
 
+    /**
+     * @return true; contributors may track progress
+     */
     @Override
     public boolean canTrackProgress() {
         return true;
     }
 
+    /**
+     * @return true; contributors may create problems
+     */
     @Override
     public boolean canCreateProblems() {
         return true;
     }
 
+    /**
+     * @return true; contributors may view multiple hints
+     */
     @Override
     public boolean canViewMultipleHints() {
         return true;
     }
 
+    /**
+     * @return true; contributors may favorite problems
+     */
     @Override
     public boolean canFavoriteProblems() {
         return true;
     }
 
-    /** Prepares a new {@link Question}; does not add it to {@link QuestionList}. */
+    /*
+     * @param question the question to prepare; ignored if null
+     */
     public void addQuestion(Question question) {
         if (question == null) {
             return;
@@ -81,7 +116,10 @@ public class Contributor extends User {
         }
     }
 
-    /** Normalizes null collections on a {@link Question} (e.g. after the no-arg constructor). */
+    /**
+     
+     * @param question the question to normalize; ignored if null
+     */
     public void editQuestion(Question question) {
         if (question == null) {
             return;
@@ -89,7 +127,9 @@ public class Contributor extends User {
         question.updateQuestion(question);
     }
 
-    /** Model hook; removing from storage is done by {@link QuestionList#deleteQuestion(Question)}. */
+    /*
+     * @param question the question to delete; ignored if null
+     */
     public void deleteQuestion(Question question) {
         if (question == null) {
             return;
@@ -97,8 +137,10 @@ public class Contributor extends User {
         question.deleteQuestion();
     }
 
-    /**
-     * {@link Question} has no test-case field yet; cases are appended as lines on {@link Question#getHints()}.
+    /*
+     
+     * @param question  the target question; ignored if null
+     * @param testCases the test cases to append; ignored if null
      */
     public void addTestCases(Question question, TestCase[] testCases) {
         if (question == null || testCases == null) {
@@ -121,6 +163,12 @@ public class Contributor extends User {
         patchQuestion(question, null, null, hints);
     }
 
+    /**
+     * Replaces the topics on the question with the given values.
+     *
+     * @param question the target question; ignored if null
+     * @param topics     the topics to assign; null or empty elements are skipped
+     */
     public void assignTopics(Question question, Topic[] topics) {
         if (question == null) {
             return;
@@ -136,6 +184,10 @@ public class Contributor extends User {
         patchQuestion(question, null, list, null);
     }
 
+    /*
+     * @param question the target question; ignored if null
+     * @param hints    the hints to add; ignored if null
+     */
     public void addHints(Question question, String[] hints) {
         if (question == null || hints == null) {
             return;
@@ -153,8 +205,10 @@ public class Contributor extends User {
         patchQuestion(question, null, null, merged);
     }
 
-    /**
-     * UML: time and space complexity strings. Stored in {@link Question#getDifficulty()} until the model has separate fields.
+    /* 
+     * @param question         the target question; ignored if null
+     * @param timeComplexity   time complexity text; may be null or blank
+     * @param spaceComplexity space complexity text; may be null or blank
      */
     public void setComplexity(Question question, String timeComplexity, String spaceComplexity) {
         if (question == null) {
@@ -175,10 +229,21 @@ public class Contributor extends User {
         patchQuestion(question, value, null, null);
     }
 
+    /**
+     * @param list the list to copy, or null for an empty list
+     * @param <T>  the element type
+     * @return a new list containing the same elements, or an empty list if the argument was null
+     */
     private static <T> ArrayList<T> copyOrEmpty(ArrayList<T> list) {
         return list != null ? new ArrayList<>(list) : new ArrayList<>();
     }
 
+    /*
+     * @param q             the question to update; ignored if null
+     * @param newDifficulty the new difficulty, or null to keep the current value
+     * @param newTopics     the new topics list, or null to keep the current value
+     * @param newHints      the new hints list, or null to keep the current value
+     */
     private void patchQuestion(Question q, String newDifficulty, ArrayList<Topic> newTopics, ArrayList<String> newHints) {
         if (q == null) {
             return;
