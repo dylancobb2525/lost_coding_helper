@@ -3,16 +3,19 @@ package com.model;
 import java.io.File;
 
 /**
- * Holds file paths and JSON key names used by DataLoader and DataWriter.
+ * Holds JSON file paths and key names for {@link DataLoader} and {@link DataWriter}.
+ *
+ * @author Christopher Feuchter
  */
 public class DataConstants {
-    /** Path to the users json file. */
     public static final String USER_FILE_NAME = "json/users.json";
-    /** Path to the questions json file. */
     public static final String QUESTION_FILE_NAME = "json/questions.json";
 
     /**
-     * Tries to find the json file. Works if we run from project folder or from a parent folder.
+     * Resolves {@code relativePath} when the process runs from the project root or a parent folder.
+     *
+     * @param relativePath path such as {@link #USER_FILE_NAME}
+     * @return a path that exists on disk, or {@code relativePath} if neither location is found
      */
     public static String resolveDataPath(String relativePath) {
         File f = new File(relativePath);
@@ -22,12 +25,9 @@ public class DataConstants {
         return relativePath;
     }
 
-    /** Key for the users array in json. */
     public static final String USERS = "users";
-    /** Key for the questions array in json. */
     public static final String QUESTIONS = "questions";
 
-    /** User json keys. */
     public static final String USER_ID = "userId";
     public static final String USER_USERNAME = "username";
     public static final String USER_EMAIL = "email";
@@ -44,7 +44,6 @@ public class DataConstants {
     public static final String USER_FAVORITE_PROBLEMS = "favoriteProblems";
     public static final String USER_PROGRESS_TRACKER_ID = "progressTrackerId";
 
-    /** Question json keys. */
     public static final String QUESTION_ID = "id";
     public static final String QUESTION_TITLE = "title";
     public static final String QUESTION_PROMPT = "prompt";

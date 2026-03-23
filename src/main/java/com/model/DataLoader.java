@@ -13,13 +13,16 @@ import org.json.simple.parser.JSONParser;
 import com.model.enums.Topic;
 
 /**
- * Reads users and questions from the JSON files so the app can start up with real data.
+ * Loads application data from JSON files (users and questions).
+ *
+ * @author Christopher Feuchter
  */
 public class DataLoader extends DataConstants {
 
     /**
-     * Reads users.json and builds User objects. If the file is missing or broken you get an empty list.
-     * @return list of users (empty if something went wrong)
+     * Loads {@code users.json} into {@link User} instances.
+     *
+     * @return users, or an empty list if the file is missing or invalid
      */
     public ArrayList<User> getUsers() {
         ArrayList<User> users = new ArrayList<>();
@@ -56,8 +59,9 @@ public class DataLoader extends DataConstants {
     }
 
     /**
-     * Reads questions.json and builds Question objects (title, prompt, topics, etc.).
-     * @return list of questions (empty if something went wrong)
+     * Loads {@code questions.json} into {@link Question} instances.
+     *
+     * @return questions, or an empty list if the file is missing or invalid
      */
     public ArrayList<Question> getProblems() {
         ArrayList<Question> questions = new ArrayList<>();
@@ -104,14 +108,18 @@ public class DataLoader extends DataConstants {
         return questions;
     }
 
-    /** @return the array at key, or null if missing or wrong type (avoids NPE / ClassCastException). */
+    /**
+     * Returns the {@link JSONArray} at {@code key}, or null if missing or not an array.
+     */
     private static JSONArray getJSONArray(JSONObject root, String key) {
         Object raw = root.get(key);
         return raw instanceof JSONArray ? (JSONArray) raw : null;
     }
 
     /**
-     * JSON may store voteCount as Long, Integer, or other Number; plain cast to Long fails on Integer.
+     * Parses vote count from JSON (handles {@link Number} subtypes safely).
+     *
+     * @return a non-negative count, or 0 if invalid
      */
     private static int parseVoteCount(Object raw) {
         if (raw == null) {
@@ -127,6 +135,9 @@ public class DataLoader extends DataConstants {
         }
     }
 
+    /**
+     * Parses a UUID string, or returns null if null, empty, or invalid.
+     */
     private static UUID parseUUID(String s) {
         if (s == null || s.isEmpty()) return null;
         try {
@@ -136,7 +147,9 @@ public class DataLoader extends DataConstants {
         }
     }
 
-    /** Parses a date-time string from JSON into LocalDateTime. */
+    /**
+     * Parses an  date-time string into {@link LocalDateTime}.
+     */
     private static LocalDateTime parseDateTime(String s) {
         if (s == null || s.isEmpty()) return null;
         try {
@@ -146,7 +159,9 @@ public class DataLoader extends DataConstants {
         }
     }
 
-    /** Turns a JSON array of topic strings into Topic enums (skips ones we do not recognize). */
+    /**
+     * Converts a JSON array of topic names to {@link Topic} values and skips unrecognized names.
+     */
     private static ArrayList<Topic> parseTopics(JSONArray arr) {
         ArrayList<Topic> list = new ArrayList<>();
         if (arr == null) return list;
@@ -157,13 +172,14 @@ public class DataLoader extends DataConstants {
                 if (normalized.equals("ALGORITHMDATASTRUCTURE")) normalized = "ALGORITHMS_DATASTRUCTURE";
                 list.add(Topic.valueOf(normalized));
             } catch (Exception ignored) {
-                // skip unknown topic
             }
         }
         return list;
     }
 
-    /** Converts a JSON array into a list of strings. */
+    /**
+     * Converts a JSON array to a list of strings.
+     */
     private static ArrayList<String> parseStringList(JSONArray arr) {
         ArrayList<String> list = new ArrayList<>();
         if (arr == null) return list;
@@ -174,7 +190,9 @@ public class DataLoader extends DataConstants {
     }
 
     /**
-     * Test main. Run this to see if loading works. Prints how many users and problems were loaded.
+     * Prints loaded user and question counts (manual smoke test).
+     *
+     * @param args unused
      */
     public static void main(String[] args) {
         DataLoader loader = new DataLoader();

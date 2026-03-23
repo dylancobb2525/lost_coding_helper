@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.model.enums.ActivityType;
 
-
 /**
- * Tracks user progress such as completed problems, activities, and streaks. 
- * Used to keep record of a users progress over time.
+ * Tracks completed problems, activity log, and daily streak for a user.
+ *
+ * @author Christopher Feuchter
  */
 public class ProgressTracker {
     private List<Question> completedProblems;
@@ -17,6 +17,7 @@ public class ProgressTracker {
     private int streak;
     private LocalDate lastActiveDate;
 
+    /** Creates an empty tracker with streak 0. */
     public ProgressTracker() {
         completedProblems = new ArrayList<>();
         userActivities = new ArrayList<>();
@@ -24,27 +25,45 @@ public class ProgressTracker {
         lastActiveDate = null;
     }
 
+    /**
+     * @param streak consecutive active days
+     */
     public void setStreak(int streak) {
         this.streak = streak;
     }
 
+    /**
+     * @param lastActiveDate last day activity was recorded
+     */
     public void setLastActiveDate(LocalDate lastActiveDate) {
         this.lastActiveDate = lastActiveDate;
     }
 
+    /**
+     * @return consecutive active days
+     */
     public int getStreak() {
         return streak;
     }
 
+    /**
+     * @return last activity date, or {@code null}
+     */
     public LocalDate getLastActiveDate() {
         return lastActiveDate;
     }
 
+    /** Sets streak to 0 and clears the last activity date. */
     public void resetStreak() {
         streak = 0;
         lastActiveDate = null;
     }
 
+    /**
+     * Logs an attempt for the given problem.
+     *
+     * @param problem the problem; ignored if {@code null}
+     */
     public void recordAttempt(Question problem) {
         if (problem == null) {
             return;
@@ -52,6 +71,12 @@ public class ProgressTracker {
         logActivity(ActivityType.ATTEMPT, "Attempted problem: " + problem.getTitle());
     }
 
+    /**
+     * Marks a problem completed, updates the activity log, and refreshes the streak.
+     *
+     * @param problem the problem; ignored if {@code null}
+     * @param timeSpentSec time spent in seconds
+     */
     public void markCompleted(Question problem, int timeSpentSec) {
         if (problem == null) {
             return;
@@ -64,9 +89,10 @@ public class ProgressTracker {
     }
 
     /**
-     * adds new activity to the user activity. Combines activity type and details for a log entry.
-     * @param activityType
-     * @param details
+     * Appends a formatted line to the activity log.
+     *
+     * @param activityType kind of activity
+     * @param details human-readable detail text
      */
     public void logActivity(ActivityType activityType, String details) {
         if (activityType == null || details == null) {
@@ -74,8 +100,9 @@ public class ProgressTracker {
         }
         String activity = activityType.toString() + ": " + details;
         userActivities.add(activity);
-    } 
+    }
 
+    /** Updates streak based on {@link #lastActiveDate} and today. */
     public void updateStreak() {
         LocalDate today = LocalDate.now();
 
@@ -91,27 +118,29 @@ public class ProgressTracker {
         lastActiveDate = today;
     }
 
+    /**
+     * @return a copy of all completed problems
+     */
     public ArrayList<Question> getCompletedQuestionsByDifficulty() {
         return new ArrayList<>(completedProblems);
     }
 
+    /**
+     * @return a copy of all completed problems (topic filtering not yet implemented)
+     */
     public ArrayList<Question> getCompletedQuestionsByTopic() {
-        // returns all completed questions needs a parameter for topic
         return new ArrayList<>(completedProblems);
     }
 
+    /**
+     * @return number of completed problems
+     */
     public int getCurrentCount() {
         return completedProblems.size();
     }
 
+    /** Logs a generic activity entry. */
     public void addActivity() {
-        
         logActivity(ActivityType.OTHER, "User activity recorded");
     }
-
-
-
-
-
-
 }

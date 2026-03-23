@@ -10,36 +10,50 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Main facade for the app. The UI and driver talk to this class instead of touching UserList, QuestionList, or JSON directly.
+ * Application facade: the UI and driver use this class instead of {@link UserList}, {@link QuestionList}, or JSON directly.
+ *
+ * @author Christopher Feuchter
  */
 public class ProblemApplication {
-    private UserList userList; 
+    private UserList userList;
     private QuestionList questionList;
     private DataLoader dataLoader;
     private DataWriter dataWriter;
-    private User currentUser; // Track currently logged-in user (need to update uml )
+    private User currentUser;
     private StudyPlanner studyPlanner;
 
     /**
-     * Sets up all the lists and connects them. Call init() after this to load data from JSON.
+     * Constructs lists, loader, writer, and study planner. Call {@link #init()} to load JSON.
      */
     public ProblemApplication() {
         this.userList = new UserList();
         this.questionList = new QuestionList();
         this.dataLoader = new DataLoader();
         this.dataWriter = new DataWriter();
-        // Set DataWriter for QuestionList so it can save
         this.questionList.setDataWriter(this.dataWriter);
         this.studyPlanner = new StudyPlanner(this.questionList);
     }
 
     /**
-     * Creates a new user account. Returns null if validation fails or the username/email is already taken.
+     * Registers a new account.
+     *
+     * @param displayName visible name
+     * @param username login name
+     * @param email email address
+     * @param password plain password (hashed by the list)
+     * @return the new user, or {@code null} if validation fails or username/email is taken
      */
     public User createAccount(String displayName, String username, String email, String password) {
         return userList.createAccount(displayName, username, email, password);
     }
 
+    /**
+     * Authenticates and sets the current user on success.
+     *
+     * @param username login name
+     * @param password password
+     * @return the authenticated user, or {@code null} on failure
+     */
     public User login(String username, String password) {
         User user = userList.authenticate(username, password);
         if (user != null) {
@@ -49,42 +63,47 @@ public class ProblemApplication {
     }
 
     /**
-     * Clears the current user. Call this when someone logs out.
+     * Clears the logged-in user.
      */
     public void logOut() {
         this.currentUser = null;
     }
 
     /**
-     * Returns every question in the list. Used for display or filtering.
+     * @return all questions
      */
     public ArrayList<Question> getAllQuestions() {
         return questionList.getAll();
     }
 
     /**
-     * Looks up a question by its id. Returns null if it doesn't exist.
+     * @param questionId question id
+     * @return the question, or {@code null} if missing
      */
     public Question getQuestionById(UUID questionId) {
         return questionList.getById(questionId);
     }
 
     /**
-     * Adds a new question to the list. Doesn't save to file - call saveAll() for that.
+     * Adds a question in memory; use {@link #saveAll()} to persist.
+     *
+     * @param question the question to add
      */
     public void createQuestion(Question question) {
         questionList.addQuestion(question);
     }
 
     /**
-     * Updates an existing question by id. Returns false if the question wasn't found.
+     * @param question question with updated fields
+     * @return {@code true} if updated
      */
     public boolean updateQuestion(Question question) {
         return questionList.updateQuestion(question);
     }
 
     /**
-     * Deletes a question by id. Returns false if it wasn't found or the delete failed.
+     * @param questionId id of the question to remove
+     * @return {@code true} if removed
      */
     public boolean deleteQuestion(UUID questionId) {
         Question question = questionList.getById(questionId);
@@ -95,7 +114,8 @@ public class ProblemApplication {
     }
 
     /**
-     * Attaches a solution to a question. Does nothing if the question doesn't exist.
+     * @param questionId target question
+     * @param solution solution to attach
      */
     public void addSolution(UUID questionId, Solution solution) {
         Question question = questionList.getById(questionId);
@@ -105,11 +125,14 @@ public class ProblemApplication {
     }
 
     /**
-     * Records that the current user attempted a question. Does nothing if nobody is logged in.
+     * Records an attempt for the logged-in user. No-op if not logged in.
+     *
+     * @param questionId question id
+     * @param timeSpentSec time spent in seconds
      */
     public void recordAttempt(UUID questionId, int timeSpentSec) {
         if (currentUser == null) {
-            return; // No user logged in
+            return;
         }
         Question question = questionList.getById(questionId);
         if (question != null) {
@@ -118,11 +141,14 @@ public class ProblemApplication {
     }
 
     /**
-     * Marks a question as completed for the current user. Updates their streak. Does nothing if nobody is logged in.
+     * Marks a question completed for the logged-in user. No-op if not logged in.
+     *
+     * @param questionId question id
+     * @param timeSpentSec time spent in seconds
      */
     public void markCompleted(UUID questionId, int timeSpentSec) {
         if (currentUser == null) {
-            return; // No user logged in
+            return;
         }
         Question question = questionList.getById(questionId);
         if (question != null) {
@@ -131,17 +157,17 @@ public class ProblemApplication {
     }
 
     /**
-     * Returns the questions the current user has completed. Empty list if nobody is logged in.
+     * @return completed questions for the current user; empty if not logged in
      */
     public ArrayList<Question> getCompletedQuestion() {
         if (currentUser == null) {
-            return new ArrayList<>(); // No user logged in
+            return new ArrayList<>();
         }
         return currentUser.getProgressTracker().getCompletedQuestionsByDifficulty();
     }
 
     /**
-     * Loads users and questions from json files into the lists.
+     * Loads users and questions from JSON into the lists.
      */
     public void init() {
         userList.load();
@@ -152,7 +178,9 @@ public class ProblemApplication {
     }
 
     /**
-     * Saves users and questions to their JSON files. Returns false if either save failed.
+     * Persists users and questions to JSON.
+     *
+     * @return {@code true} if both saves succeed
      */
     public boolean saveAll() {
         boolean usersSaved = dataWriter.saveUsers(userList.getAll());
@@ -161,11 +189,12 @@ public class ProblemApplication {
     }
 
     /**
-     * Creates a study plan for the given language and level.
-     * level: 1 = beginner, 2 = intermediate, 3 = advanced (conceptually).
-     * All levels currently map to the underlying "EASY" difficulty used
-     * by questions in this project.
-     * language: for example "Java", "C++", "Python".
+     * Builds a study plan for the given language and level. Levels {@code 1}–{@code 3} are beginner–advanced; all map to the
+     * project's easy difficulty for now.
+     *
+     * @param language e.g. {@code "Java"}, {@code "C++"}
+     * @param level 1 = beginner, 2 = intermediate, 3 = advanced
+     * @return generated plan
      */
     public LearningPlan createStudyPlan(String language, int level) {
         if (studyPlanner == null) {
@@ -175,27 +204,33 @@ public class ProblemApplication {
     }
 
     /**
-     * Snapshot of all users for leaderboard (by streak). A new instance each call so it matches the current UserList.
+     * @return leaderboard snapshot from the current user list
      */
     public LeaderBoard getLeaderBoard() {
         return new LeaderBoard(userList.getAll());
     }
 
-    /** Convenience: top {@code limit} users by streak. */
+    /**
+     * @param limit max number of users
+     * @return top users by streak
+     */
     public List<User> getLeaderboardTopPerformers(int limit) {
         return getLeaderBoard().getTopPerformers(limit);
     }
 
-    /** Convenience: aggregate stats (see {@link LeaderBoard#getStats()}). */
+    /**
+     * @return aggregate leaderboard counts (see {@link LeaderBoard#getStats()})
+     */
     public HashMap<String, Integer> getLeaderboardStats() {
         return getLeaderBoard().getStats();
     }
 
     /**
-     * Writes a formatted text representation of the question to a file for offline review.
-     * @param question the question to export; ignored if null
-     * @param filePath path for the output .txt file
-     * @return true if the file was written successfully
+     * Writes a text export of the question to a file.
+     *
+     * @param question the question; ignored if {@code null}
+     * @param filePath output path
+     * @return {@code true} if written successfully
      */
     public boolean exportQuestionToFile(Question question, String filePath) {
         if (question == null || filePath == null || filePath.isBlank()) {
@@ -238,7 +273,10 @@ public class ProblemApplication {
     }
 
     /**
-     * Searches questions by title (contains query, case-insensitive).
+     * Title search (case-insensitive substring).
+     *
+     * @param query search text
+     * @return matching questions
      */
     public ArrayList<Question> searchQuestions(String query) {
         return questionList.search(query);
