@@ -1,3 +1,7 @@
+**Presentation video:** [LOST — CSCE 247 group presentation](https://www.youtube.com/watch?v=pn7DI63_Z9E)
+
+---
+
 # LOST (Lord of the Strings) Coding Helper
 
 A simplified LeetCode-style app for practicing coding problems, tracking progress, and interacting with solutions. Built for **CSCE 247-002 – Software Engineering**.
