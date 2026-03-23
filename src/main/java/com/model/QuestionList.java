@@ -10,10 +10,16 @@ public class QuestionList {
     private final ArrayList<Question> questions;
     private DataWriter dataWriter;
 
+    /**
+     * Creates an empty question list. You'll need to set the DataWriter before saving.
+     */
     public QuestionList() {
         this.questions = new ArrayList<>();
     }
 
+    /**
+     * Sets the DataWriter so we can save questions to the json file. ProblemApplication calls this at startup.
+     */
     public void setDataWriter(DataWriter dataWriter) {
         this.dataWriter = dataWriter;
     }

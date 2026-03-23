@@ -12,14 +12,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Writes users and questions to json files. Used for save and update.
+ * Handles saving our data to JSON. Called when we need to persist users or questions.
  */
 public class DataWriter extends DataConstants {
 
     /**
-     * Save users to the users json file. This is the Save users json task.
-     * @param users the list to save
-     * @return true if it worked
+     * Writes the user list to users.json. Returns false if something went wrong.
      */
     public boolean saveUsers(ArrayList<User> users) {
         try {
@@ -44,9 +42,7 @@ public class DataWriter extends DataConstants {
     }
 
     /**
-     * Saves the list of questions to the questions json file. Overwrites the questions in the file.
-     * @param problems the list to save
-     * @return true if it worked
+     * Writes the question list to questions.json. Replaces whatever was in there before.
      */
     public boolean saveProblem(ArrayList<Question> problems) {
         try {
@@ -70,9 +66,7 @@ public class DataWriter extends DataConstants {
     }
 
     /**
-     * Updates one question in the questions json file. Finds it by id and replaces it.
-     * @param problem the question with the new data (same id as the one to update)
-     * @return true if it found the question and wrote the file
+     * Finds a question in the file by id and swaps it with the new version. Returns false if it wasn't found.
      */
     public boolean updateProblem(Question problem) {
         try {
@@ -97,9 +91,7 @@ public class DataWriter extends DataConstants {
     }
 
     /**
-     * Deletes one question from the questions json file. Finds it by id and removes it.
-     * @param problem the question to delete (only the id is used to find it)
-     * @return true if it found the question and wrote the file
+     * Removes a question from the file by matching its id. Returns false if we couldn't find it.
      */
     public boolean deleteProblem(Question problem) {
         try {
@@ -124,7 +116,7 @@ public class DataWriter extends DataConstants {
     }
 
     /**
-     * Saves a user's favorite problems list to the users json file.
+     * Updates one user's favorite problems in users.json. Uses the userId to find the right user.
      */
     public boolean saveFavorites(UUID userId, ArrayList<Question> favorites) {
         try {
@@ -154,6 +146,9 @@ public class DataWriter extends DataConstants {
         }
     }
 
+    /**
+     * Reads a JSON file and parses it into an object. Returns null if the file is missing or invalid.
+     */
     private JSONObject readJson(String path) {
         try (FileReader fr = new FileReader(path)) {
             Object parsed = new JSONParser().parse(fr);
@@ -163,6 +158,9 @@ public class DataWriter extends DataConstants {
         }
     }
 
+    /**
+     * Writes a JSON object to a file. Returns false if the write fails for any reason.
+     */
     private boolean writeJson(String path, JSONObject root) {
         try (FileWriter fw = new FileWriter(path)) {
             fw.write(root.toJSONString());
@@ -174,6 +172,9 @@ public class DataWriter extends DataConstants {
         }
     }
 
+    /**
+     * Turns a User object into a JSON object so we can save it. Just maps each field to the right key.
+     */
     @SuppressWarnings("unchecked")
     private JSONObject userToJson(User u) {
         JSONObject obj = new JSONObject();
@@ -207,6 +208,9 @@ public class DataWriter extends DataConstants {
         return obj;
     }
 
+    /**
+     * Turns a Question object into a JSON object for saving. Maps all the question fields to the JSON format.
+     */
     @SuppressWarnings("unchecked")
     private JSONObject questionToJson(Question q) {
         JSONObject obj = new JSONObject();
@@ -240,7 +244,7 @@ public class DataWriter extends DataConstants {
     }
 
     /**
-     * Test main. Loads questions then saves them. Prints true if save worked.
+     * Quick test - loads questions and saves them back. Just run this to check if saving works.
      */
     public static void main(String[] args) {
         DataLoader loader = new DataLoader();
