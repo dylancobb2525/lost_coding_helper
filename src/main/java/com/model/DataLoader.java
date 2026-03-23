@@ -13,12 +13,12 @@ import org.json.simple.parser.JSONParser;
 import com.model.enums.Topic;
 
 /**
- * Loads users and questions from json files.
+ * Reads users and questions from the JSON files so the app can start up with real data.
  */
 public class DataLoader extends DataConstants {
 
     /**
-     * Load users from the users json file. This is the Load users json task.
+     * Reads users.json and builds User objects. If the file is missing or broken you get an empty list.
      * @return list of users (empty if something went wrong)
      */
     public ArrayList<User> getUsers() {
@@ -56,7 +56,7 @@ public class DataLoader extends DataConstants {
     }
 
     /**
-     * Loads all questions from the questions json file. This is the Load Questions json task.
+     * Reads questions.json and builds Question objects (title, prompt, topics, etc.).
      * @return list of questions (empty if something went wrong)
      */
     public ArrayList<Question> getProblems() {
@@ -136,6 +136,7 @@ public class DataLoader extends DataConstants {
         }
     }
 
+    /** Parses a date-time string from JSON into LocalDateTime. */
     private static LocalDateTime parseDateTime(String s) {
         if (s == null || s.isEmpty()) return null;
         try {
@@ -145,6 +146,7 @@ public class DataLoader extends DataConstants {
         }
     }
 
+    /** Turns a JSON array of topic strings into Topic enums (skips ones we do not recognize). */
     private static ArrayList<Topic> parseTopics(JSONArray arr) {
         ArrayList<Topic> list = new ArrayList<>();
         if (arr == null) return list;
@@ -161,6 +163,7 @@ public class DataLoader extends DataConstants {
         return list;
     }
 
+    /** Converts a JSON array into a list of strings. */
     private static ArrayList<String> parseStringList(JSONArray arr) {
         ArrayList<String> list = new ArrayList<>();
         if (arr == null) return list;

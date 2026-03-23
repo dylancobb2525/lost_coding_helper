@@ -29,14 +29,17 @@ public class Achievement {
         this.badgeCategory = badgeCategory;
     }
 
+    /** @return the achievement's id */
     public UUID getId() {
         return id;
     }
 
+    /** Sets the id. */
     public void setId(UUID id) {
         this.id = id;
     }
 
+    /** @return display name of the achievement */
     public String getName() {
         return name;
     }
@@ -45,22 +48,27 @@ public class Achievement {
         this.name = name;
     }
 
+    /** @return what you have to do to earn it */
     public String getCriteria() {
         return criteria;
     }
 
+    /** Sets the criteria text. */
     public void setCriteria(String criteria) {
         this.criteria = criteria;
     }
 
+    /** @return badge group like Bronze or Silver */
     public String getBadgeCategory() {
         return badgeCategory;
     }
 
+    /** Sets the badge category. */
     public void setBadgeCategory(String badgeCategory) {
         this.badgeCategory = badgeCategory;
     }
 
+    /** @return a simple string with all the fields for debugging */
     @Override
     public String toString() {
         return "Achievement{id=" + id +
