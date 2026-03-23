@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+/**
+ * Main facade for the app. The UI and driver talk to this class instead of touching UserList, QuestionList, or JSON directly.
+ */
 public class ProblemApplication {
     private UserList userList; 
     private QuestionList questionList;
@@ -16,7 +20,9 @@ public class ProblemApplication {
     private User currentUser; // Track currently logged-in user (need to update uml )
     private StudyPlanner studyPlanner;
 
-    // Constructor to initialize all components
+    /**
+     * Sets up all the lists and connects them. Call init() after this to load data from JSON.
+     */
     public ProblemApplication() {
         this.userList = new UserList();
         this.questionList = new QuestionList();
@@ -27,6 +33,9 @@ public class ProblemApplication {
         this.studyPlanner = new StudyPlanner(this.questionList);
     }
 
+    /**
+     * Creates a new user account. Returns null if validation fails or the username/email is already taken.
+     */
     public User createAccount(String displayName, String username, String email, String password) {
         return userList.createAccount(displayName, username, email, password);
     }
@@ -39,26 +48,44 @@ public class ProblemApplication {
         return user;
     }
 
+    /**
+     * Clears the current user. Call this when someone logs out.
+     */
     public void logOut() {
         this.currentUser = null;
     }
 
+    /**
+     * Returns every question in the list. Used for display or filtering.
+     */
     public ArrayList<Question> getAllQuestions() {
         return questionList.getAll();
     }
-    
+
+    /**
+     * Looks up a question by its id. Returns null if it doesn't exist.
+     */
     public Question getQuestionById(UUID questionId) {
         return questionList.getById(questionId);
     }
 
+    /**
+     * Adds a new question to the list. Doesn't save to file - call saveAll() for that.
+     */
     public void createQuestion(Question question) {
         questionList.addQuestion(question);
     }
 
+    /**
+     * Updates an existing question by id. Returns false if the question wasn't found.
+     */
     public boolean updateQuestion(Question question) {
         return questionList.updateQuestion(question);
     }
 
+    /**
+     * Deletes a question by id. Returns false if it wasn't found or the delete failed.
+     */
     public boolean deleteQuestion(UUID questionId) {
         Question question = questionList.getById(questionId);
         if (question != null) {
@@ -67,6 +94,9 @@ public class ProblemApplication {
         return false;
     }
 
+    /**
+     * Attaches a solution to a question. Does nothing if the question doesn't exist.
+     */
     public void addSolution(UUID questionId, Solution solution) {
         Question question = questionList.getById(questionId);
         if (question != null) {
@@ -74,6 +104,9 @@ public class ProblemApplication {
         }
     }
 
+    /**
+     * Records that the current user attempted a question. Does nothing if nobody is logged in.
+     */
     public void recordAttempt(UUID questionId, int timeSpentSec) {
         if (currentUser == null) {
             return; // No user logged in
@@ -84,6 +117,9 @@ public class ProblemApplication {
         }
     }
 
+    /**
+     * Marks a question as completed for the current user. Updates their streak. Does nothing if nobody is logged in.
+     */
     public void markCompleted(UUID questionId, int timeSpentSec) {
         if (currentUser == null) {
             return; // No user logged in
@@ -94,6 +130,9 @@ public class ProblemApplication {
         }
     }
 
+    /**
+     * Returns the questions the current user has completed. Empty list if nobody is logged in.
+     */
     public ArrayList<Question> getCompletedQuestion() {
         if (currentUser == null) {
             return new ArrayList<>(); // No user logged in
@@ -112,6 +151,9 @@ public class ProblemApplication {
         }
     }
 
+    /**
+     * Saves users and questions to their JSON files. Returns false if either save failed.
+     */
     public boolean saveAll() {
         boolean usersSaved = dataWriter.saveUsers(userList.getAll());
         boolean questionsSaved = dataWriter.saveProblem(questionList.getAll());
