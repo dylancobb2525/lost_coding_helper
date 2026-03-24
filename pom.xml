@@ -11,11 +11,12 @@
     </properties>
     <dependencies>
 
+        <!-- compile scope: required so `requires junit` in src/main/java/module-info.java resolves.
+             (test scope puts JUnit only on the test classpath, not main compile — module-info would error.) -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
-            <scope>test</scope>
         </dependency>
 
 
@@ -41,9 +42,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!-- JUnit 4 + named main module: run tests from classpath (avoids brittle module-path wiring). -->
+                    <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
             <plugin>
