@@ -26,14 +26,12 @@ public class DataLoader extends DataConstants {
      */
     public ArrayList<User> getUsers() {
         ArrayList<User> users = new ArrayList<>();
-        
-        try {
-            FileReader reader = new FileReader(resolveDataPath(USER_FILE_NAME));
+
+        try (FileReader reader = new FileReader(resolveDataPath(USER_FILE_NAME))) {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
             JSONArray usersJSON = getJSONArray(jsonObject, USERS);
             if (usersJSON == null) {
-                reader.close();
                 return users;
             }
 
@@ -49,12 +47,10 @@ public class DataLoader extends DataConstants {
                 User user = new Contributor(userId, displayName, accountId, email, username, hashedPassword);
                 users.add(user);
             }
-            
-            reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // Malformed JSON, I/O errors, or bad structure: return empty list (API contract).
         }
-        
+
         return users;
     }
 
@@ -65,14 +61,12 @@ public class DataLoader extends DataConstants {
      */
     public ArrayList<Question> getProblems() {
         ArrayList<Question> questions = new ArrayList<>();
-        
-        try {
-            FileReader reader = new FileReader(resolveDataPath(QUESTION_FILE_NAME));
+
+        try (FileReader reader = new FileReader(resolveDataPath(QUESTION_FILE_NAME))) {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
             JSONArray questionsJSON = getJSONArray(jsonObject, QUESTIONS);
             if (questionsJSON == null) {
-                reader.close();
                 return questions;
             }
 
@@ -99,12 +93,10 @@ public class DataLoader extends DataConstants {
                 }
                 questions.add(question);
             }
-            
-            reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // Malformed JSON, I/O errors, or bad structure: return empty list (API contract).
         }
-        
+
         return questions;
     }
 
@@ -169,7 +161,10 @@ public class DataLoader extends DataConstants {
             String s = String.valueOf(o);
             try {
                 String normalized = s.replace("/", "").replace(" ", "_").toUpperCase();
-                if (normalized.equals("ALGORITHMDATASTRUCTURE")) normalized = "ALGORITHMS_DATASTRUCTURE";
+                // "Algorithms/DataStructure" -> ALGORITHMSDATASTRUCTURE (note the "s" in Algorithms).
+                if ("ALGORITHMSDATASTRUCTURE".equals(normalized) || "ALGORITHMDATASTRUCTURE".equals(normalized)) {
+                    normalized = "ALGORITHMS_DATASTRUCTURE";
+                }
                 list.add(Topic.valueOf(normalized));
             } catch (Exception ignored) {
             }
