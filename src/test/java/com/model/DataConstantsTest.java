@@ -77,4 +77,12 @@ public class DataConstantsTest {
     public void resolveDataPath_throwsWhenRelativePathNull() {
         DataConstants.resolveDataPath(null);
     }
+
+    /*
+     * Simple summary for our group / teacher:
+     * This class tests resolveDataPath which picks where the json files live depending on what
+     * folder you run the program from. We check a fake file in target, a path that doesnt exist,
+     * and null. One test only runs if you start from the parent folder next to lost_coding_helper
+     * otherwise it gets skipped and thats ok.
+     */
 }

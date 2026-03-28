@@ -351,4 +351,12 @@ public class DataWriterTest {
         }
         return path;
     }
+
+    /*
+     * Simple summary for our group / teacher:
+     * This class tests DataWriter writing json. We try save users, save questions, update one
+     * question by id, delete one question, and save favorite problem ids for a user. We also
+     * test the cases where it should return false or skip bad data. Same backup idea as the
+     * loader tests so we don't mess up the real json files.
+     */
 }

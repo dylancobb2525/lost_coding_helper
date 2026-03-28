@@ -128,4 +128,11 @@ public class DataLoaderTest {
         }
         return path;
     }
+
+    /*
+     * Simple summary for our group / teacher:
+     * This class tests DataLoader reading json files. We check that good json loads users and
+     * questions right, that missing stuff gives empty lists, and that broken json does not crash
+     * the app. We back up the real json files before each test and put them back after.
+     */
 }
