@@ -30,6 +30,21 @@ public class ProblemApplicationUI {
         scenarioCreateAccountSuccessPublisher();
         scenarioSallyCreatesQuestionAndTwoSolutions();
         scenarioJimmyBauerCompletesDailyTask();
+
+        System.out.println("Problem Application UI Tests");
+        testAccountAndLoginFlow();
+        testQuestionLifecycleFlow();
+        testSolutionAndSearchFlow();
+        testProgressFlow();
+        testSystemUtilitiesFlow();
+    }
+
+    private void printPass(String message) {
+    System.out.println("PASS: " + message);
+}
+
+    private void printFail(String message) {
+        System.out.println("FAIL: " + message);
     }
 
     /**
