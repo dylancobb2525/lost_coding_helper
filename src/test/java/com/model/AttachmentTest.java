@@ -62,7 +62,6 @@ public class AttachmentTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
      * This class tests Attachment constructor behavior. We check automatic id creation,
      * automatic upload time creation, and that provided values stay the same when passed in.
      */

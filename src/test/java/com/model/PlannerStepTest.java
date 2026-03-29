@@ -28,7 +28,6 @@ public class PlannerStepTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
      * This class tests that PlannerStep stores the constructor values correctly,
      * including language, difficulty, description, duration, and question ids.
      */

@@ -96,7 +96,6 @@ public class CommentTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
      * This class tests Comment creation, editing, and delete behavior. We check constructor
      * timestamps, editing text, editing with null, and that deleteComment clears the body.
      */

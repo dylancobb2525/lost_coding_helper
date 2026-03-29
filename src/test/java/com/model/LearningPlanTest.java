@@ -64,7 +64,6 @@ public class LearningPlanTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
      * This class tests LearningPlan list handling and total time calculation. We check null step
      * lists, copied lists, protected step lists, and total duration across all planner steps.
      */
