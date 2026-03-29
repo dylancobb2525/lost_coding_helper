@@ -51,7 +51,6 @@ public class AchievementTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
      * This class tests Achievement object creation. We check that ids are made when needed,
      * that the constructor keeps a provided id, and that toString includes the important fields.
      */
