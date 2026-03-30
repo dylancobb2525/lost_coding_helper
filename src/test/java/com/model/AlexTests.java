@@ -4,32 +4,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.model.enums.Topic;
 
 public class AlexTests {
 
+    private ProblemApplication app;
 
-    public static void main(String[] args) {
-        AlexTests tests = new AlexTests();
-        tests.runAllTests();
-    }
-
-    public void runAllTests() {
-        System.out.println("Running AlexTests...\n");
-
-        testValidAccountCreation();
-        testDuplicateEmailRejected();
-        testValidLogin();
-        testLoginReturnsNullForWrongPassword();
-        testLogoutClearsSessionBehavior();
-        testSearchMissingKeyword();
-        testQuestionIsStoredAfterCreation();
-        testDeleteMissingQuestionFails();
-        testAddingSolutionIncreasesCount();
-        testSearchQuestionsFindsMatchingTitle();
-        testFileReturnsFalseForBlankPath();
-        testCompletedQuestionsEmptyWhenLoggedOut();
-        testMarkCompletedDoesNothingWhenLoggedOut();
+    @Before
+    public void setUp() {
+        app = new ProblemApplication();
+        try {
+            app.init();
+        } catch (Exception e) {
+            System.out.println("Warning: init failed during test setup: " + e.getMessage());
+        }
     }
 
     /**
@@ -47,7 +43,7 @@ public class AlexTests {
 
     /**
      * Initializes a fresh problemapplication to test.
-     * @return the initialized problemappplication.
+     * @return the initialized problemapplication.
      */
     private ProblemApplication createFreshApplication() {
         ProblemApplication app = new ProblemApplication();
@@ -86,44 +82,42 @@ public class AlexTests {
         );
     }
 
+    @Test
     public void testValidAccountCreation() {
-        ProblemApplication app = createFreshApplication();
-    
         String unique = UUID.randomUUID().toString().substring(0, 5);
         String username = "alex" + unique;
         String email = "alex" + unique + "@gmail.com";
 
         User user = app.createAccount("Alex", username, email, "Password1239");
-        printTestResult("testValidAccountCreation", user != null);     
-}
+        assertNotNull(user);
+    }
 
-
+    @Test
     public void testDuplicateEmailRejected() {
-        ProblemApplication app = createFreshApplication();
-    
         String unique = UUID.randomUUID().toString().substring(0, 5);
         String email = "same" + unique + "@gmail.com";
 
         User first = app.createAccount("Alex", "alex" + unique, email, "Password1239");
         User second = app.createAccount("Bill", "bill" + unique, email, "Password1239");
-        printTestResult("testDuplicateEmailRejected", first != null && second == null);
+
+        assertNotNull(first);
+        assertNull(second);
     }
 
+    @Test
     public void testValidLogin() {
-        ProblemApplication app = createFreshApplication();
-    
         String unique = UUID.randomUUID().toString().substring(0, 5);
         String username = "john" + unique;
         String email = "john" + unique + "@gmail.com";
 
         app.createAccount("John", username, email, "Password1239");
         User user = app.login(username, "Password1239");
-        printTestResult("testValidLogin", user != null);
+
+        assertNotNull(user);
     }
 
+    @Test
     public void testLogoutClearsSessionBehavior() {
-        ProblemApplication app = createFreshApplication();
-    
         String unique = UUID.randomUUID().toString().substring(0, 5);
         String username = "mike" + unique;
         String email = "mike" + unique + "@gmail.com";
@@ -133,20 +127,17 @@ public class AlexTests {
         app.logOut();
 
         boolean passed = app.getCompletedQuestion().size() == 0;
-         printTestResult("testLogoutClearsSessionBehavior", passed);
+        assertTrue(passed);
     }
 
+    @Test
     public void testSearchMissingKeyword() {
-        ProblemApplication app = createFreshApplication();
-
         ArrayList<Question> results = app.searchQuestions("zzzznotfoundkeyword");
-
-        printTestResult("testSearchMissingKeyword", results.size() == 0);
+        assertEquals(0, results.size());
     }
 
+    @Test
     public void testQuestionIsStoredAfterCreation() {
-        ProblemApplication app = createFreshApplication();
-    
         String unique = UUID.randomUUID().toString().substring(0, 5);
         User user = app.createAccount("Creator", "creator" + unique, "creator" + unique + "@gmail.com", "Password1239");
 
@@ -155,21 +146,17 @@ public class AlexTests {
 
         app.createQuestion(question);
 
-        printTestResult("testQuestionIsStoredAfterCreation", app.getQuestionById(questionId) != null);
-        }
-
-
-    public void testDeleteMissingQuestionFails() {
-        ProblemApplication app = createFreshApplication();
-
-        boolean result = app.deleteQuestion(UUID.randomUUID());
-
-        printTestResult("testDeleteQuestionFails", result == false);
+        assertNotNull(app.getQuestionById(questionId));
     }
 
-        public void testAddingSolutionIncreasesCount() {
-        ProblemApplication app = createFreshApplication();
+    @Test
+    public void testDeleteMissingQuestionFails() {
+        boolean result = app.deleteQuestion(UUID.randomUUID());
+        assertFalse(result);
+    }
 
+    @Test
+    public void testAddingSolutionIncreasesCount() {
         String unique = UUID.randomUUID().toString().substring(0, 5);
         User user = app.createAccount("Solver", "solver" + unique, "solver" + unique + "@gmail.com", "Password1239");
 
@@ -194,12 +181,11 @@ public class AlexTests {
 
         int after = app.getQuestionById(question.getId()).getSolutions().size();
 
-        printTestResult("testAddingSolutionIncreasesCount", after == before + 1);
+        assertEquals(before + 1, after);
     }
 
+    @Test
     public void testSearchQuestionsFindsMatchingTitle() {
-        ProblemApplication app = createFreshApplication();
-
         String unique = UUID.randomUUID().toString().substring(0, 5);
         User user = app.createAccount("Searcher", "searcher" + unique, "searcher" + unique + "@gmail.com", "Password1239");
 
@@ -208,43 +194,36 @@ public class AlexTests {
 
         ArrayList<Question> results = app.searchQuestions("Binary Search Tree");
 
-        printTestResult("testSearchQuestionsFindsMatchingTitle", results.size() > 0);
+        assertTrue(results.size() > 0);
     }
 
+    @Test
     public void testLoginReturnsNullForWrongPassword() {
-    ProblemApplication app = createFreshApplication();
+        String unique = UUID.randomUUID().toString().substring(0, 5);
+        String username = "jane" + unique;
+        String email = "jane" + unique + "@gmail.com";
 
-    String unique = UUID.randomUUID().toString().substring(0, 5);
-    String username = "jane" + unique;
-    String email = "jane" + unique + "@gmail.com";
+        app.createAccount("Jane", username, email, "Password1239");
+        User user = app.login(username, "WrongPassword1239");
 
-    app.createAccount("Jane", username, email, "Password1239");
-    User user = app.login(username, "WrongPassword1239");
+        assertNull(user);
+    }
 
-    printTestResult("testLoginReturnsNullForWrongPassword", user == null);
-    }   
-
+    @Test
     public void testFileReturnsFalseForBlankPath() {
-        ProblemApplication app = createFreshApplication();
-
         boolean result = app.exportQuestionToFile(null, "");
-
-        printTestResult("testFileReturnsFalseForBlankPath", result == false);
+        assertFalse(result);
     }
 
+    @Test
     public void testCompletedQuestionsEmptyWhenLoggedOut() {
-        ProblemApplication app = createFreshApplication();
-
-        printTestResult("testCompletedQuestionsEmptyWhenLoggedOut",
-                app.getCompletedQuestion().size() == 0);
+        assertEquals(0, app.getCompletedQuestion().size());
     }
 
+    @Test
     public void testMarkCompletedDoesNothingWhenLoggedOut() {
-        ProblemApplication app = createFreshApplication();
-
         app.markCompleted(UUID.randomUUID(), 300);
 
-        printTestResult("testMarkCompletedDoesNothingWhenLoggedOut",
-                app.getCompletedQuestion().size() == 0);
+        assertEquals(0, app.getCompletedQuestion().size());
     }
 }
