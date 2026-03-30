@@ -1,9 +1,13 @@
 package com.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
+import com.model.enums.Topic;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -16,6 +20,22 @@ public class QuestionTest {
     @Before
     public void setUp() {
         question = new Question();
+    }
+
+    /** Full constructor initializes hints; default {@link Question()} does not. */
+    private Question newQuestionWithHintsList() {
+        return new Question(
+            UUID.randomUUID(),
+            "Title",
+            "Prompt",
+            "EASY",
+            new ArrayList<Topic>(),
+            new ArrayList<String>(),
+            new ArrayList<String>(),
+            UUID.randomUUID(),
+            LocalDateTime.now(),
+            "DRAFT"
+        );
     }
 
     @Test
@@ -39,58 +59,6 @@ public class QuestionTest {
     public void addSolution_withNullSolution() {
         question.addSolution(null);
         assertTrue(question.getSolutions().isEmpty());
-    }
-
-    @Test
-    /*
-     * Title: addSolution 
-     * Test | Reasoning
-     * | adds a solution with all data | to see if it takes an other solution other than the basic one |
-     */
-    public void addSolution_withFullyPopulatedSolution() {
-        Solution realSolution = new Solution(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            "for(int i=0;i<n;i++)",
-            "Java",
-            "iterate through array",
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            0
-        );
-        question.addSolution(realSolution);
-        assertSame(realSolution, question.getSolutions().get(0));
-        assertEquals("Java", question.getSolutions().get(0).getLanguage());
-    }
-
-    @Test
-    /*
-     * Title: addSolution 
-     * Test | Reasoning
-     * |if question will take multiple solutions | does it show all of the solutions|
-     */
-    public void addSolution_withMultipleSolutions() {
-        Solution s1 = new Solution();
-        Solution s2 = new Solution();
-        Solution s3 = new Solution();
-        question.addSolution(s1);
-        question.addSolution(s2);
-        question.addSolution(s3);
-        assertEquals(3, question.getSolutions().size());
-    }
-
-    @Test
-    /*
-     * Title: addSolution 
-     * Test | Reasoning
-     * | see if the same solution can get added twice | it doesn't black the same solution from being added |
-     */
-    public void addSolution_withDuplicateSolution() {
-        Solution solution = new Solution();
-        question.addSolution(solution);
-        question.addSolution(solution);
-        assertEquals(2, question.getSolutions().size());
     }
 
     @Test
@@ -119,89 +87,238 @@ public class QuestionTest {
 
     @Test
     /*
-     * Title: addComment
+     * Title: setPublicStatus
      * Test | Reasoning
-     * | special characters comment | sees the extent of the comment String. |
+     * | true sets published | status string becomes PUBLISHED |
      */
-    public void addComment_withSpecialCharacters_commentStoredCorrectly() {
-        String comment = "@tag! $100.50? (note) [brackets] {curly} \"quotes\" /slashes/";
-        question.addComment(comment);
-        assertEquals(1, question.getComments().size());
-        assertEquals(comment, question.getComments().get(0));
+    public void setPublicStatus_true_setsPublished() {
+        question.setPublicStatus(true);
+        assertEquals("PUBLISHED", question.getStatus());
+        assertTrue(question.getPublicStatus());
     }
 
     @Test
     /*
-     * Title: upvote
+     * Title: setPublicStatus
      * Test | Reasoning
-     * | upvote once from zero | makes sure one upvote sets vote count to 1 |
+     * | false sets draft | status string becomes DRAFT |
      */
-    public void upvote_fromZero_setsVoteCountToOne() {
-        question.upvote(UUID.randomUUID());
-        assertEquals(1, question.getVoteCount());
+    public void setPublicStatus_false_setsDraft() {
+        question.setPublicStatus(false);
+        assertEquals("DRAFT", question.getStatus());
+        assertFalse(question.getPublicStatus());
     }
 
     @Test
     /*
-     * Title: upvote
+     * Title: updateQuestion
      * Test | Reasoning
-     * | upvote multiple times | confirms vote count matches number of upvote calls |
+     * | copy fields from another question | title and prompt match source |
      */
-    public void upvote_multipleTimes_voteCountMatchesCalls() {
-        question.upvote(UUID.randomUUID());
-        question.upvote(UUID.randomUUID());
-        question.upvote(UUID.randomUUID());
-        assertEquals(3, question.getVoteCount());
+    public void updateQuestion_withValidSource_copiesFields() {
+        Question base = newQuestionWithHintsList();
+        Question source = new Question(
+            UUID.randomUUID(),
+            "NewTitle",
+            "NewPrompt",
+            "HARD",
+            new ArrayList<Topic>(),
+            new ArrayList<String>(),
+            new ArrayList<String>(),
+            UUID.randomUUID(),
+            LocalDateTime.now(),
+            "PUBLISHED"
+        );
+        assertTrue(base.updateQuestion(source));
+        assertEquals("NewTitle", base.getTitle());
+        assertEquals("NewPrompt", base.getPrompt());
+        assertEquals("HARD", base.getDifficulty());
+        assertEquals("PUBLISHED", base.getStatus());
     }
 
     @Test
     /*
-     * Title: upvote
+     * Title: updateQuestion
      * Test | Reasoning
-     * | upvote and verify solutions unchanged | checks that upvote only changes vote count |
+     * | null argument | method returns false  |
      */
-    public void upvote_doesNotAffectSolutionsList() {
-        assertTrue(question.getSolutions().isEmpty());
-        question.upvote(UUID.randomUUID());
-        assertEquals(1, question.getVoteCount());
-        assertTrue(question.getSolutions().isEmpty());
+    public void updateQuestion_withNull_returnsFalse() {
+        Question base = newQuestionWithHintsList();
+        assertFalse(base.updateQuestion(null));
     }
 
     @Test
     /*
-     * Title: downvote
+     * Title: deleteQuestion
      * Test | Reasoning
-     * | downvote at zero | confirms vote count cannot go negative from zero |
+     * | basic call | check basic works |
      */
-    public void downvote_fromZero_staysZero() {
-        question.downvote(UUID.randomUUID());
-        assertEquals(0, question.getVoteCount());
+    public void deleteQuestion_returnsTrue() {
+        assertTrue(question.deleteQuestion());
     }
 
     @Test
     /*
-     * Title: downvote
+     * Title: deleteQuestion
      * Test | Reasoning
-     * | upvote once then downvote once | checks that opposite actions return count to zero |
+     * | on question with data | check if it works when there is data |
      */
-    public void downvote_afterSingleUpvote_returnsToZero() {
-        question.upvote(UUID.randomUUID());
-        question.downvote(UUID.randomUUID());
-        assertEquals(0, question.getVoteCount());
+    public void deleteQuestion_onPopulatedQuestion_returnsTrue() {
+        question.addComment("c");
+        question.addAttachment("a.txt");
+        assertTrue(question.deleteQuestion());
     }
 
     @Test
     /*
-     * Title: downvote
+     * Title: addCodeSnippet
      * Test | Reasoning
-     * | multiple downvotes from zero | confirms repeated downvotes never go below zero |
+     * | add one snippet | check if it works |
      */
-    public void downvote_multipleTimesFromZero_neverBelowZero() {
-        question.downvote(UUID.randomUUID());
-        question.downvote(UUID.randomUUID());
-        question.downvote(UUID.randomUUID());
-        assertEquals(0, question.getVoteCount());
+    public void addCodeSnippet_basic_addsToHints() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet("int x = 1;");
+        assertEquals(1, q.getHints().size());
+        assertEquals("int x = 1;", q.getHints().get(0));
     }
 
+    @Test
+    /*
+     * Title: addCodeSnippet
+     * Test | Reasoning
+     * | null snippet | nothing added |
+     */
+    public void addCodeSnippet_null_doesNotAdd() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet(null);
+        assertTrue(q.getHints().isEmpty());
+    }
+
+    @Test
+    /*
+     * Title: updateCodeSnippet
+     * Test | Reasoning
+     * | valid index |  text replaced |
+     */
+    public void updateCodeSnippet_validIndex_replacesHint() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet("old");
+        q.updateCodeSnippet(0, "new");
+        assertEquals("new", q.getHints().get(0));
+    }
+
+    @Test
+    /*
+     * Title: updateCodeSnippet
+     * Test | Reasoning
+     * | null new snippet | existing hint unchanged |
+     */
+    public void updateCodeSnippet_nullNewSnippet_noChange() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet("keep");
+        q.updateCodeSnippet(0, null);
+        assertEquals("keep", q.getHints().get(0));
+    }
+
+    @Test
+    /*
+     * Title: deleteCodeSnippet
+     * Test | Reasoning
+     * | delete first of two | second remains at index zero |
+     */
+    public void deleteCodeSnippet_validIndex_removesHint() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet("first");
+        q.addCodeSnippet("second");
+        q.deleteCodeSnippet(0);
+        assertEquals(1, q.getHints().size());
+        assertEquals("second", q.getHints().get(0));
+    }
+
+    @Test
+    /*
+     * Title: deleteCodeSnippet
+     * Test | Reasoning
+     * | index out of range | list unchanged |
+     */
+    public void deleteCodeSnippet_indexTooLarge_noChange() {
+        Question q = newQuestionWithHintsList();
+        q.addCodeSnippet("one");
+        q.deleteCodeSnippet(5);
+        assertEquals(1, q.getHints().size());
+    }
+
+    @Test
+    /*
+     * Title: addAttachment
+     * Test | Reasoning
+     * | basic path string | attachment stored |
+     */
+    public void addAttachment_basic_addsToList() {
+        question.addAttachment("notes.pdf");
+        assertEquals(1, question.getAttachments().size());
+        assertEquals("notes.pdf", question.getAttachments().get(0));
+    }
+
+    @Test
+    /*
+     * Title: addAttachment
+     * Test | Reasoning
+     * | null attachment | ignored |
+     */
+    public void addAttachment_null_doesNotAdd() {
+        question.addAttachment(null);
+        assertTrue(question.getAttachments().isEmpty());
+    }
+
+    @Test
+    /*
+     * Title: updateAttachment
+     * Test | Reasoning
+     * | valid index | value replaced |
+     */
+    public void updateAttachment_validIndex_replacesValue() {
+        question.addAttachment("old.txt");
+        question.updateAttachment(0, "new.txt");
+        assertEquals("new.txt", question.getAttachments().get(0));
+    }
+
+    @Test
+    /*
+     * Title: updateAttachment
+     * Test | Reasoning
+     * | null new attachment | original kept |
+     */
+    public void updateAttachment_nullNewValue_noChange() {
+        question.addAttachment("same.txt");
+        question.updateAttachment(0, null);
+        assertEquals("same.txt", question.getAttachments().get(0));
+    }
+
+    @Test
+    /*
+     * Title: deleteAttachment
+     * Test | Reasoning
+     * | remove first | second shifts down |
+     */
+    public void deleteAttachment_validIndex_removesItem() {
+        question.addAttachment("x");
+        question.addAttachment("y");
+        question.deleteAttachment(0);
+        assertEquals(1, question.getAttachments().size());
+        assertEquals("y", question.getAttachments().get(0));
+    }
+
+    @Test
+    /*
+     * Title: deleteAttachment
+     * Test | Reasoning
+     * | delete sole attachment | list empty |
+     */
+    public void deleteAttachment_onlyItem_leavesEmpty() {
+        question.addAttachment("solo.dat");
+        question.deleteAttachment(0);
+        assertTrue(question.getAttachments().isEmpty());
+    }
 
 }

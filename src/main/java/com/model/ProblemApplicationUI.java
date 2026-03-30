@@ -301,6 +301,21 @@ public class ProblemApplicationUI {
         System.out.println();
     }
 
+    private void testAccountAndLoginFlow() {
+    }
+
+    private void testQuestionLifecycleFlow() {
+    }
+
+    private void testSolutionAndSearchFlow() {
+    }
+
+    private void testProgressFlow() {
+    }
+
+    private void testSystemUtilitiesFlow() {
+    }
+
     private static String buildLongestSubarrayPrompt() {
         return String.join("\n",
                 "Given an integer array nums and an integer k, return the length of the longest contiguous subarray whose total equals k.",
