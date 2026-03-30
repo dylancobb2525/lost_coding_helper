@@ -78,6 +78,32 @@ public class DataConstantsTest {
         DataConstants.resolveDataPath(null);
     }
 
+    @Test
+    public void resolveDataPath_findsFileWhenPathHasSurroundingWhitespace() throws IOException {
+        String rel = "target/data_constants_trim_ws/marker.json";
+        Path p = Paths.get(rel);
+        Files.createDirectories(p.getParent());
+        Files.writeString(p, "{}", StandardCharsets.UTF_8);
+        try {
+            String padded = "  " + rel.replace('/', java.io.File.separatorChar) + "  ";
+            String resolved = DataConstants.resolveDataPath(padded);
+            assertTrue("Path with padding should still resolve to an existing file", new File(resolved).exists());
+        } finally {
+            Files.deleteIfExists(p);
+            Path parent = p.getParent();
+            if (parent != null) {
+                Files.deleteIfExists(parent);
+            }
+        }
+    }
+
+    @Test
+    public void resolveDataPath_returnsAbsolutePathWhenFileExistsAtRelativePath() {
+        String resolved = DataConstants.resolveDataPath(MARKER_REL);
+        assertTrue(new File(resolved).exists());
+        assertTrue("Resolved path should be absolute for stable file access", Paths.get(resolved).isAbsolute());
+    }
+
     /*
      * Simple summary for our group / teacher:
      * This class tests resolveDataPath which picks where the json files live depending on what

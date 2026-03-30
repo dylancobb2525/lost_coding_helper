@@ -94,6 +94,29 @@ public class DataLoaderTest {
     }
 
     @Test
+    public void getProblems_loadsQuestionsWhenRootUsesCapitalQInKey() throws IOException {
+        writeUsersJson("{\"users\":[]}");
+        writeQuestionsJson("{\"Questions\":[{\"id\":\"33333333-3333-3333-3333-333333333333\",\"title\":\"Cap Key\",\"prompt\":\"p\",\"difficulty\":\"EASY\",\"topics\":[],\"companyTags\":[],\"hints\":[],\"createdBy\":\"11111111-1111-1111-1111-111111111111\",\"createdAt\":\"2026-03-26T12:00:00\",\"status\":\"PUBLISHED\",\"voteCount\":0}]}");
+
+        DataLoader loader = new DataLoader();
+        ArrayList<Question> questions = loader.getProblems();
+
+        assertEquals(1, questions.size());
+        assertEquals("Cap Key", questions.get(0).getTitle());
+    }
+
+    @Test
+    public void getUsers_omitsUsersWithEmptyUsername() throws IOException {
+        writeUsersJson("{\"users\":[{\"userId\":\"11111111-1111-1111-1111-111111111111\",\"username\":\"\",\"email\":\"emptyname@example.com\",\"displayName\":\"NoName\",\"hashedPassword\":\"h1\",\"accountId\":\"PUB-EMPTY\"}]}");
+        writeQuestionsJson("{\"questions\":[]}");
+
+        DataLoader loader = new DataLoader();
+        ArrayList<User> users = loader.getUsers();
+
+        assertEquals(0, users.size());
+    }
+
+    @Test
     public void getProblems_handlesBadVoteAndBadTopicGracefully() throws IOException {
         writeUsersJson("{\"users\":[]}");
         writeQuestionsJson("{\"questions\":[{\"id\":\"44444444-4444-4444-4444-444444444444\",\"title\":\"X\",\"prompt\":\"Y\",\"difficulty\":\"EASY\",\"topics\":[\"NotARealTopic\"],\"companyTags\":[],\"hints\":[],\"createdBy\":\"11111111-1111-1111-1111-111111111111\",\"createdAt\":\"bad-date\",\"status\":\"DRAFT\",\"voteCount\":\"not-a-number\"}]}");

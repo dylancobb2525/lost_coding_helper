@@ -277,6 +277,21 @@ public class DataWriterTest {
     }
 
     @Test
+    public void saveUsers_writesMultiLineFormattedJson() throws Exception {
+        writeUsersJson("{\"users\":[]}");
+        writeQuestionsJson("{\"languages\":[],\"questions\":[]}");
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(new Contributor(USER_ALICE, "Alice", "ACC-1", "alice@example.com", "AliceUser", "Hash1aBc"));
+
+        DataWriter writer = new DataWriter();
+        assertTrue(writer.saveUsers(users));
+
+        String content = Files.readString(usersPath, StandardCharsets.UTF_8);
+        assertTrue("Saved JSON should use multiple lines for readability", content.indexOf('\n') >= 0);
+    }
+
+    @Test
     public void saveFavorites_returnsFalseWhenUserIdNotInFile() throws Exception {
         writeUsersJson("{\"users\":[{\"userId\":\"" + USER_ALICE
                 + "\",\"username\":\"AliceUser\",\"email\":\"a@a.com\",\"displayName\":\"A\","
