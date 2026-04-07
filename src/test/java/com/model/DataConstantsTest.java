@@ -105,7 +105,7 @@ public class DataConstantsTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
+     * Simple summary for our group / portia and TAs:
      * This class tests resolveDataPath which picks where the json files live depending on what
      * folder you run the program from. We check a fake file in target, a path that doesnt exist,
      * and null. One test only runs if you start from the parent folder next to lost_coding_helper

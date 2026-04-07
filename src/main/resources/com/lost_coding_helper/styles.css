@@ -1,0 +1,14 @@
+.label {
+    -fx-text-fill: #549df9;
+    -fx-font-size: 30;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #549df9, #007bff);
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+    -fx-padding: 10 20 10 20;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+}

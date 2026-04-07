@@ -368,7 +368,7 @@ public class DataWriterTest {
     }
 
     /*
-     * Simple summary for our group / teacher:
+     * Simple summary for our group / Portia and TAs:
      * This class tests DataWriter writing json. We try save users, save questions, update one
      * question by id, delete one question, and save favorite problem ids for a user. We also
      * test the cases where it should return false or skip bad data. Same backup idea as the
