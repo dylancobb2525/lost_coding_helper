@@ -70,6 +70,13 @@ public class ProblemApplication {
     }
 
     /**
+     * @return the logged-in user, or {@code null}
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
      * @return all questions
      */
     public ArrayList<Question> getAllQuestions() {

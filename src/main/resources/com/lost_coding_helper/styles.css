@@ -1,14 +1,145 @@
-.label {
-    -fx-text-fill: #549df9;
-    -fx-font-size: 30;
+
+
+.screen-root {
+    -fx-background-color: #fdf2f2;
+    -fx-font-family: "SF Pro Text", "Segoe UI", system-ui, sans-serif;
 }
 
-.button {
-    -fx-background-color: linear-gradient(to bottom, #549df9, #007bff);
-    -fx-text-fill: white;
-    -fx-font-size: 16;
-    -fx-padding: 10 20 10 20;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+.welcome-stack,
+.dashboard-stack,
+.auth-pane {
+    -fx-background-color: transparent;
+}
+
+.title-lots {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+}
+
+.subtitle-app {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 13px;
+    -fx-opacity: 0.92;
+}
+
+.title-section {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.field-label {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.hint-muted {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 11px;
+    -fx-opacity: 0.65;
+}
+
+.hint-code {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 10px;
+    -fx-opacity: 0.55;
+    -fx-font-family: "SF Mono", "Consolas", monospace;
+}
+
+.error-label {
+    -fx-text-fill: #a34d4d;
+    -fx-font-size: 12px;
+    -fx-max-width: 280px;
+}
+
+.dashboard-heading {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+/* Underline-style inputs */
+.text-field.field-underline,
+.password-field.field-underline {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent transparent #4a3737 transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 6 2 10 2;
+    -fx-text-fill: #4a3737;
+    -fx-prompt-text-fill: derive(#4a3737, 50%);
+}
+
+.text-field.field-underline:focused,
+.password-field.field-underline:focused {
+    -fx-border-color: transparent transparent #e08484 transparent;
+}
+
+/* Primary pill (rose) */
+.button-pill-primary {
+    -fx-background-color: #e08484;
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 14 24 14 24;
+    -fx-background-radius: 100px;
+    -fx-border-radius: 100px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(74, 55, 55, 0.18), 10, 0.2, 0, 4);
+}
+
+.button-pill-primary:hover {
+    -fx-background-color: derive(#e08484, -6%);
+}
+
+.button-pill-primary:pressed {
+    -fx-background-color: derive(#e08484, -12%);
+}
+
+/* Outline pill */
+.button-pill-outline {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 14 24 14 24;
+    -fx-background-radius: 100px;
+    -fx-border-radius: 100px;
+    -fx-border-color: #4a3737;
+    -fx-border-width: 1.5px;
+    -fx-cursor: hand;
+}
+
+.button-pill-outline:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+}
+
+.button-pill-outline:pressed {
+    -fx-background-color: derive(#fdf2f2, -4%);
+}
+
+.link-back {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 8 0;
+    -fx-underline: false;
+}
+
+.link-back:hover {
+    -fx-text-fill: #e08484;
+}
+
+.link-guest {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+}
+
+.link-guest:hover {
+    -fx-text-fill: #e08484;
 }

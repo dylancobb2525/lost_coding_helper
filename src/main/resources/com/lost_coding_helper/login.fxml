@@ -1,34 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.LoginController">
-    <children>
-        <VBox spacing="16.0" alignment="CENTER">
-            <children>
-                <HBox spacing="12.0" alignment="CENTER_LEFT">
-                    <children>
-                        <Button fx:id="backButton" text="Back" onAction="#switchToHome" />
-                        <Label text="Login" />
-                    </children>
-                </HBox>
-
-                <TextField fx:id="usernameField" promptText="Username" maxWidth="260.0" />
-                <PasswordField fx:id="passwordField" promptText="Password" maxWidth="260.0" />
-                <Button fx:id="loginButton" text="Login" />
-            </children>
-            <padding>
-                <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
-            </padding>
-        </VBox>
-    </children>
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-</VBox>
+<StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.LoginController">
+   <children>
+      <VBox fx:id="loginPane" alignment="CENTER" spacing="24.0" styleClass="auth-pane">
+         <children>
+            <HBox alignment="CENTER_LEFT" maxWidth="280.0">
+               <children>
+                  <Hyperlink onAction="#backToWelcome" styleClass="link-back" text="← Back" />
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" spacing="8.0">
+               <children>
+                  <Label styleClass="title-lots" text="LOTS" />
+                  <Label styleClass="subtitle-app" text="Lord of the Strings - Coding Helper" wrapText="true" textAlignment="CENTER" />
+               </children>
+            </VBox>
+            <VBox maxWidth="280.0" spacing="20.0">
+               <children>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Username or email" />
+                        <TextField fx:id="loginUsernameField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Password" />
+                        <PasswordField fx:id="loginPasswordField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <Label fx:id="loginErrorLabel" managed="false" styleClass="error-label" visible="false" wrapText="true" />
+            <VBox maxWidth="280.0" spacing="14.0">
+               <children>
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#submitLogin" styleClass="button-pill-primary" text="Log in" />
+                  <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#showSignUpFromLogin" styleClass="button-pill-outline" text="Sign up" />
+                  <VBox alignment="CENTER" spacing="4.0">
+                     <children>
+                        <Hyperlink onAction="#continueAsGuestFromLogin" styleClass="link-guest" text="Continue as guest" />
+                        <Label styleClass="hint-muted" text="(not in Java backend yet)" textAlignment="CENTER" wrapText="true" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="32.0" left="28.0" right="28.0" top="16.0" />
+         </padding>
+      </VBox>
+      <VBox fx:id="signUpPane" alignment="CENTER" spacing="20.0" managed="false" styleClass="auth-pane" visible="false">
+         <children>
+            <HBox alignment="CENTER_LEFT" maxWidth="280.0">
+               <children>
+                  <Hyperlink onAction="#backToLoginPanel" styleClass="link-back" text="← Back to login" />
+               </children>
+            </HBox>
+            <VBox alignment="CENTER_LEFT" spacing="6.0">
+               <children>
+                  <Label styleClass="title-section" text="Create account" />
+                  <Label styleClass="hint-code" text="UserList.createAccount(displayName, username, email, password)" wrapText="true" />
+               </children>
+            </VBox>
+            <VBox maxWidth="280.0" spacing="16.0">
+               <children>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Display name" />
+                        <TextField fx:id="signUpDisplayNameField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Username" />
+                        <TextField fx:id="signUpUsernameField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Email" />
+                        <TextField fx:id="signUpEmailField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Password" />
+                        <PasswordField fx:id="signUpPasswordField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label styleClass="field-label" text="Confirm password" />
+                        <PasswordField fx:id="signUpConfirmPasswordField" styleClass="field-underline" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <Label styleClass="hint-muted" text="Username: 3-25 [a-zA-Z0-9_]. Password: 8+ upper, lower, digit." wrapText="true" />
+            <Label fx:id="signUpErrorLabel" managed="false" styleClass="error-label" visible="false" wrapText="true" />
+            <Button maxWidth="280.0" mnemonicParsing="false" onAction="#submitSignUp" styleClass="button-pill-primary" text="Create account" />
+         </children>
+         <padding>
+            <Insets bottom="32.0" left="28.0" right="28.0" top="16.0" />
+         </padding>
+      </VBox>
+   </children>
+</StackPane>

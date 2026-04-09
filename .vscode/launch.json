@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "App",
+      "request": "launch",
+      "mainClass": "com.lost_coding_helper/com.lost_coding_helper.App",
+      "projectName": "lost_coding_helper"
+    },
+    {
+      "type": "java",
       "name": "AlexTests",
       "request": "launch",
       "mainClass": "com.lost_coding_helper/com.model.AlexTests",
