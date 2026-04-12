@@ -1,3 +1,5 @@
+[Figma Prototype 2](https://www.figma.com/design/ApJM9mCpNewdokuCuSq0y2/LOST-Coding-Helper---Mobile-UI?node-id=0-1&t=2Q4GYt9FjX6UUCa2-1)
+
 **Presentation video:** [LOST — CSCE 247 group presentation](https://www.youtube.com/watch?v=pn7DI63_Z9E)
 
 ---
