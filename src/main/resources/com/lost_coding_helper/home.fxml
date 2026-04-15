@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
 <StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.HomeController">
    <children>
@@ -34,14 +43,182 @@
             <Insets bottom="32.0" left="28.0" right="28.0" top="48.0" />
          </padding>
       </VBox>
-      <VBox fx:id="dashboardPane" alignment="TOP_CENTER" spacing="16.0" styleClass="dashboard-stack" visible="false" managed="false">
+      <VBox fx:id="dashboardPane" spacing="0.0" styleClass="dashboard-stack" visible="false" managed="false">
          <children>
-            <Label fx:id="dashboardGreeting" styleClass="dashboard-heading" text="Home" />
-            <Label styleClass="hint-muted" text="Dashboard UI coming soon — you are signed in." textAlignment="CENTER" wrapText="true" />
+            <VBox styleClass="home-header">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label fx:id="dashboardGreeting" styleClass="home-greeting" text="Hi" />
+                              <Label styleClass="home-subtitle" text="Keep your streak going" />
+                           </children>
+                        </VBox>
+                        <Button mnemonicParsing="false" onAction="#openSettings" styleClass="icon-pill" focusTraversable="false">
+                           <graphic>
+                              <SVGPath styleClass="icon-svg icon-svg-settings" content="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.15.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.2-.07.47.12.61l2.03 1.58c-.05.3-.09.63-.09.98s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.39.3.61.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.15-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.2.07-.47-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6S13.98 15.6 12 15.6z" />
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#openInfo" styleClass="icon-pill" focusTraversable="false">
+                           <graphic>
+                              <SVGPath styleClass="icon-svg" content="M12 3a9 9 0 1 0 .001 18A9 9 0 0 0 12 3Zm0 4.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Zm1.3 11.2h-2.6v-1.6h1V11h-1V9.4h2.6v7.4Z" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="22.0" left="22.0" right="22.0" top="22.0" />
+               </padding>
+            </VBox>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="home-scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox spacing="18.0" styleClass="home-content">
+                     <children>
+                        <VBox alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="streak-hero">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="12.0">
+                                 <children>
+                                    <StackPane alignment="CENTER" styleClass="flame-wrap streak-image-shell" minWidth="120.0" minHeight="120.0" prefWidth="126.0" prefHeight="126.0" maxWidth="135.0" maxHeight="135.0">
+                                       <children>
+                                          <ImageView fx:id="streakImageView" fitHeight="126.0" fitWidth="126.0" pickOnBounds="true" preserveRatio="true" smooth="true" styleClass="streak-image" />
+                                       </children>
+                                    </StackPane>
+                                    <VBox fx:id="streakCopyColumn" maxWidth="Infinity" minWidth="0.0" spacing="4.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="streakNumberLabel" maxWidth="Infinity" styleClass="streak-number" text="0" />
+                                          <Label fx:id="streakUnitLabel" maxWidth="Infinity" styleClass="streak-unit" text="DAY STREAK" />
+                                          <Label fx:id="streakMotivationLabel" maxWidth="Infinity" styleClass="streak-motivation" text="Start today, one solve will light the spark." wrapText="true" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="16.0" left="16.0" right="18.0" top="15.0" />
+                           </padding>
+                        </VBox>
+
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                           <children>
+                              <VBox styleClass="stat-chip" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="stat-chip-label" text="All-time completed" />
+                                    <Label fx:id="statAllTimeLabel" styleClass="stat-chip-value" text="0" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="12.0" left="14.0" right="14.0" top="12.0" />
+                                 </padding>
+                              </VBox>
+                              <VBox styleClass="stat-chip" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="stat-chip-label" text="Today's completed" />
+                                    <Label fx:id="statTodayCompletedLabel" styleClass="stat-chip-value" text="0" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="12.0" left="14.0" right="14.0" top="12.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </HBox>
+
+                        <GridPane hgap="14.0" styleClass="problem-grid" vgap="0.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" percentWidth="50.0" />
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" percentWidth="50.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="0.0" vgrow="ALWAYS" />
+                           </rowConstraints>
+                           <children>
+                              <VBox maxHeight="Infinity" spacing="10.0" style="-fx-background-color: rgba(255,255,255,0.98); -fx-background-radius: 18; -fx-border-color: rgba(90,65,65,0.55); -fx-border-width: 2px; -fx-border-radius: 18; -fx-border-style: solid; -fx-effect: dropshadow(gaussian, rgba(74,55,55,0.18), 10, 0.15, 0, 2);" styleClass="problem-tile problem-card-cell" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="card-kicker" text="Random problem" />
+                                    <Label fx:id="randomProblemTitle" styleClass="card-title" text="Two Sum" wrapText="true" />
+                                    <Label fx:id="randomProblemMeta" styleClass="card-meta" text="Easy · Java" />
+                                    <Label fx:id="randomSnippetLabel" styleClass="card-snippet card-snippet-fixed" text="Tap Open to jump in." wrapText="true" />
+                                    <Region styleClass="card-spacer" VBox.vgrow="ALWAYS" />
+                                    <Button maxWidth="Infinity" mnemonicParsing="false" text="Open">
+                                       <styleClass>
+                                          <String fx:value="button-pill-primary" />
+                                          <String fx:value="button-small" />
+                                       </styleClass>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+                                 </padding>
+                              </VBox>
+                              <VBox maxHeight="Infinity" spacing="10.0" style="-fx-background-color: rgba(255,255,255,0.98); -fx-background-radius: 18; -fx-border-color: rgba(90,65,65,0.55); -fx-border-width: 2px; -fx-border-radius: 18; -fx-border-style: solid; -fx-effect: dropshadow(gaussian, rgba(74,55,55,0.18), 10, 0.15, 0, 2);" styleClass="problem-tile problem-card-cell" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="card-kicker" text="From study plan" />
+                                    <Label fx:id="studyPlanTitle" styleClass="card-title" text="Valid Parentheses" wrapText="true" />
+                                    <Label fx:id="studyPlanMeta" styleClass="card-meta" text="Easy · Java" />
+                                    <Label fx:id="studySnippetLabel" styleClass="card-snippet card-snippet-fixed" text="From your Java study plan." wrapText="true" />
+                                    <Region styleClass="card-spacer" VBox.vgrow="ALWAYS" />
+                                    <Button maxWidth="Infinity" mnemonicParsing="false" text="Open">
+                                       <styleClass>
+                                          <String fx:value="button-pill-primary" />
+                                          <String fx:value="button-small" />
+                                       </styleClass>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </GridPane>
+
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label styleClass="section-title" text="Favorite problems" />
+                              <VBox fx:id="favoritesList" spacing="10.0" />
+                           </children>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="22.0" left="22.0" right="22.0" top="18.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+
+            <HBox alignment="CENTER" spacing="18.0" styleClass="nav-bar">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#navLeaderboard" styleClass="nav-icon">
+                     <graphic>
+                        <SVGPath styleClass="nav-svg" content="M7 4h10v2H7V4Zm-2 4h14v2H5V8Zm2 4h10v2H7v-2Zm-2 4h14v2H5v-2Z" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#navCalendar" styleClass="nav-icon">
+                     <graphic>
+                        <SVGPath styleClass="nav-svg" content="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm12 8H5v10h14V10Z" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#navHome" styleClass="nav-icon nav-icon-active">
+                     <graphic>
+                        <SVGPath styleClass="nav-svg" content="M12 3 3 10h2v9h6v-6h2v6h6v-9h2L12 3Z" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#navHelp" styleClass="nav-icon">
+                     <graphic>
+                        <SVGPath styleClass="nav-svg" content="M12 2a10 10 0 1 0 .001 20A10 10 0 0 0 12 2Zm0 15a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 17Zm1.2-3.8v1.1h-2.4v-1.9c0-1.4.8-2.1 1.8-2.7.8-.5 1.4-.9 1.4-1.7 0-.9-.7-1.5-1.7-1.5-1 0-1.7.6-1.8 1.6H8.1c.1-2.2 1.9-3.7 4.3-3.7 2.5 0 4.2 1.4 4.2 3.5 0 1.8-1.2 2.7-2.2 3.3-.7.4-1.2.8-1.2 2Z" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#navProfile" styleClass="nav-icon">
+                     <graphic>
+                        <SVGPath styleClass="nav-svg" content="M12 12a4 4 0 1 0-0.001-8A4 4 0 0 0 12 12Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z" />
+                     </graphic>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="18.0" right="18.0" top="10.0" />
+               </padding>
+            </HBox>
          </children>
-         <padding>
-            <Insets bottom="24.0" left="24.0" right="24.0" top="32.0" />
-         </padding>
       </VBox>
    </children>
    <padding>

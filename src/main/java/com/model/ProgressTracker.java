@@ -16,6 +16,9 @@ public class ProgressTracker {
     private ArrayList<String> userActivities;
     private int streak;
     private LocalDate lastActiveDate;
+    /** Calendar day for which {@link #completionsToday} applies; reset when the day changes. */
+    private LocalDate completionsDay;
+    private int completionsToday;
 
     /** Creates an empty tracker with streak 0. */
     public ProgressTracker() {
@@ -81,11 +84,33 @@ public class ProgressTracker {
         if (problem == null) {
             return;
         }
-        if (!completedProblems.contains(problem)) {
+        boolean newlyCompleted = !completedProblems.contains(problem);
+        if (newlyCompleted) {
             completedProblems.add(problem);
+            bumpCompletionsToday();
         }
         logActivity(ActivityType.COMPLETE, "Completed problem: " + problem.getTitle() + " in " + timeSpentSec + " seconds");
         updateStreak();
+    }
+
+    private void bumpCompletionsToday() {
+        LocalDate today = LocalDate.now();
+        if (completionsDay == null || !completionsDay.equals(today)) {
+            completionsDay = today;
+            completionsToday = 0;
+        }
+        completionsToday++;
+    }
+
+    /**
+     * How many problems were marked completed today (resets at local midnight in memory).
+     */
+    public int getCompletionsToday() {
+        LocalDate today = LocalDate.now();
+        if (completionsDay == null || !completionsDay.equals(today)) {
+            return 0;
+        }
+        return completionsToday;
     }
 
     /**
