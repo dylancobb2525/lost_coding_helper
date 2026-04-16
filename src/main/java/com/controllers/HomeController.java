@@ -7,7 +7,6 @@ import com.model.ProblemApplication;
 import com.model.Question;
 import com.model.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -315,11 +314,11 @@ public class HomeController {
 
     @FXML
     private void continueAsGuest() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Continue as guest");
-        alert.setHeaderText(null);
-        alert.setContentText("Guest mode is not implemented in the Java backend yet.");
-        alert.showAndWait();
+        if (App.getApplication() == null) {
+            return;
+        }
+        App.getApplication().loginAsGuest();
+        applyLoggedInState();
     }
 
     @FXML

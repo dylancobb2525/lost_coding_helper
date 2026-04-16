@@ -63,6 +63,16 @@ public class ProblemApplication {
     }
 
     /**
+     * Creates an in-memory guest session and sets it as the current user.
+     *
+     * @return guest user session
+     */
+    public User loginAsGuest() {
+        this.currentUser = new Guest();
+        return this.currentUser;
+    }
+
+    /**
      * Clears the logged-in user.
      */
     public void logOut() {

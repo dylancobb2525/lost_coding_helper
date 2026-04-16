@@ -4,7 +4,6 @@ import com.lost_coding_helper.App;
 import com.model.ProblemApplication;
 import com.model.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -77,12 +76,14 @@ public class LoginController {
     }
 
     @FXML
-    private void continueAsGuestFromLogin() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Continue as guest");
-        alert.setHeaderText(null);
-        alert.setContentText("Guest mode is not implemented in the Java backend yet.");
-        alert.showAndWait();
+    private void continueAsGuestFromLogin() throws IOException {
+        ProblemApplication app = App.getApplication();
+        if (app == null) {
+            showLoginError("Application is not ready.");
+            return;
+        }
+        app.loginAsGuest();
+        App.setRoot("home");
     }
 
     @FXML

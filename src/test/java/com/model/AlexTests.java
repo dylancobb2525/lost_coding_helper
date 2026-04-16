@@ -210,6 +210,15 @@ public class AlexTests {
     }
 
     @Test
+    public void testLoginAsGuestCreatesCurrentGuestSession() {
+        User guest = app.loginAsGuest();
+
+        assertNotNull(guest);
+        assertEquals(guest, app.getCurrentUser());
+        assertEquals("guest", guest.getUsername());
+    }
+
+    @Test
     public void testFileReturnsFalseForBlankPath() {
         boolean result = app.exportQuestionToFile(null, "");
         assertFalse(result);

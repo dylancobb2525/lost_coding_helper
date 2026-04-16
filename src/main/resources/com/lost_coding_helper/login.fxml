@@ -49,7 +49,7 @@
                   <VBox alignment="CENTER" spacing="4.0">
                      <children>
                         <Hyperlink onAction="#continueAsGuestFromLogin" styleClass="link-guest" text="Continue as guest" />
-                        <Label styleClass="hint-muted" text="(not in Java backend yet)" textAlignment="CENTER" wrapText="true" />
+                        <Label styleClass="hint-muted" text="Browse without creating an account." textAlignment="CENTER" wrapText="true" />
                      </children>
                   </VBox>
                </children>
