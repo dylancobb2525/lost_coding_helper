@@ -475,3 +475,193 @@
 .nav-icon-active .nav-svg {
     -fx-fill: #4a3737;
 }
+
+/* ---- Profile / Settings ---- */
+.profile-header-wrap {
+    -fx-background-color: transparent;
+}
+
+.profile-screen-title {
+    -fx-text-fill: #1a1414;
+    -fx-font-size: 17px;
+    -fx-font-weight: 800;
+}
+
+.profile-back-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4 10 4 4;
+    -fx-cursor: hand;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+}
+
+.profile-back-button:hover {
+    -fx-opacity: 0.72;
+}
+
+.profile-back-arrow {
+    -fx-fill: #1a1414;
+}
+
+.profile-body {
+    -fx-background-color: transparent;
+}
+
+.profile-body-inner {
+    -fx-background-color: transparent;
+}
+
+.profile-fill {
+    -fx-min-height: 0;
+}
+
+.profile-fields {
+    -fx-padding: 2 0 0 0;
+}
+
+.profile-avatar-shell {
+    -fx-min-width: 128px;
+    -fx-min-height: 128px;
+    -fx-pref-width: 128px;
+    -fx-pref-height: 128px;
+    -fx-max-width: 128px;
+    -fx-max-height: 128px;
+    -fx-background-color: #e08484;
+    -fx-background-radius: 999px;
+    -fx-border-radius: 999px;
+    -fx-effect: dropshadow(gaussian, rgba(224, 132, 132, 0.22), 10, 0.12, 0, 2);
+}
+
+.profile-avatar-shell-compact {
+    -fx-min-width: 88px;
+    -fx-min-height: 88px;
+    -fx-pref-width: 88px;
+    -fx-pref-height: 88px;
+    -fx-max-width: 88px;
+    -fx-max-height: 88px;
+}
+
+.profile-label {
+    -fx-text-fill: #5c3538;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 3 0 0 0;
+}
+
+.profile-value-field {
+    -fx-text-fill: #c47474;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.profile-actions {
+    -fx-padding: 6 0 0 0;
+}
+
+.profile-action-button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-alignment: center-left;
+    -fx-padding: 7 12 7 14;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1.2px;
+    -fx-border-color: rgba(92, 53, 56, 0.85);
+    -fx-cursor: hand;
+}
+
+.profile-action-button:hover {
+    -fx-background-color: #fffbfb;
+}
+
+.profile-action-button .profile-pencil {
+    -fx-text-fill: #c9a227;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 0 4 0 0;
+}
+
+.profile-logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5c3538;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 0 4 0;
+    -fx-cursor: hand;
+}
+
+.profile-logout-button:hover {
+    -fx-text-fill: #e08484;
+}
+
+.profile-dialog {
+    -fx-background-color: linear-gradient(to bottom, #fff5f5 0%, #fdf2f2 45%, #f8e8ea 100%);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(74, 55, 55, 0.18);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.profile-dialog > *.header-panel {
+    -fx-background-color: transparent;
+}
+
+.profile-dialog:header *.header-panel *.label {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+}
+
+.profile-dialog *.content.label {
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.profile-dialog .label {
+    -fx-text-fill: #4a3737;
+}
+
+.profile-dialog .text-field,
+.profile-dialog .password-field,
+.profile-dialog-field {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(74, 55, 55, 0.3);
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #4a3737;
+    -fx-prompt-text-fill: rgba(74, 55, 55, 0.52);
+    -fx-padding: 10 12 10 12;
+}
+
+.profile-dialog .button-bar .button {
+    -fx-background-color: #e08484;
+    -fx-text-fill: #4a3737;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 999px;
+    -fx-border-radius: 999px;
+    -fx-padding: 8 18 8 18;
+    -fx-cursor: hand;
+}
+
+.profile-dialog .button-bar .button:hover {
+    -fx-background-color: derive(#e08484, -6%);
+}
+
+.profile-dialog .button-bar .button:cancel {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-border-color: rgba(74, 55, 55, 0.28);
+    -fx-border-width: 1px;
+}
+
+.profile-dialog-grid {
+    -fx-padding: 8 0 0 0;
+}
+
+.profile-dialog-error {
+    -fx-border-color: rgba(163, 77, 77, 0.28);
+}

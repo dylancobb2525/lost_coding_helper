@@ -65,8 +65,24 @@ public abstract class User {
         return email;
     }
 
+    public boolean setEmail(String email) {
+        if (!validateEmail(email)) {
+            return false;
+        }
+        this.email = email.trim();
+        return true;
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public boolean setUsername(String username) {
+        if (!validateUsername(username)) {
+            return false;
+        }
+        this.username = username.trim();
+        return true;
     }
 
     public String getHashedPassword() {

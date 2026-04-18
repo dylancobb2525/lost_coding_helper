@@ -1,11 +1,275 @@
 package com.controllers;
 
 import com.lost_coding_helper.App;
+import com.model.ProblemApplication;
+import com.model.User;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 public class ProfileController {
+
+    @FXML
+    private Label displayNameValueLabel;
+
+    @FXML
+    private Label usernameValueLabel;
+
+    @FXML
+    private Label emailValueLabel;
+
+    @FXML
+    private ImageView profileImageView;
+
+    private static final String DEFAULT_IMAGE_CLASSPATH = "/images/headshot.jpeg";
+    private static final Path DEFAULT_IMAGE_FS = Path.of("images", "headshot.jpeg");
+
+    @FXML
+    private void initialize() {
+        applyCircularProfileClip();
+        hydrateUserInfo();
+        loadProfileImage(DEFAULT_IMAGE_CLASSPATH, DEFAULT_IMAGE_FS);
+    }
+
+    private void applyCircularProfileClip() {
+        Circle clip = new Circle();
+        clip.centerXProperty().bind(profileImageView.fitWidthProperty().divide(2));
+        clip.centerYProperty().bind(profileImageView.fitHeightProperty().divide(2));
+        clip.radiusProperty().bind(profileImageView.fitWidthProperty().divide(2));
+        profileImageView.setClip(clip);
+    }
+
+    private void hydrateUserInfo() {
+        User user = getCurrentUser();
+        if (user == null) {
+            displayNameValueLabel.setText("Guest");
+            usernameValueLabel.setText("guest");
+            emailValueLabel.setText("Not signed in");
+            return;
+        }
+        displayNameValueLabel.setText(safeText(user.getDisplayName(), "Unknown"));
+        usernameValueLabel.setText(safeText(user.getUsername(), "unknown"));
+        emailValueLabel.setText(safeText(user.getEmail(), "no-email@lots.app"));
+    }
+
+    private static String safeText(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private User getCurrentUser() {
+        ProblemApplication app = App.getApplication();
+        return app == null ? null : app.getCurrentUser();
+    }
+
+    private void saveUsersSilently() {
+        ProblemApplication app = App.getApplication();
+        if (app == null) {
+            return;
+        }
+        app.saveAll();
+    }
+
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        themeDialog(alert, "profile-dialog");
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        themeDialog(alert, "profile-dialog profile-dialog-error");
+        alert.showAndWait();
+    }
+
+    private void themeDialog(Dialog<?> dialog, String styleClasses) {
+        if (dialog == null) {
+            return;
+        }
+        DialogPane pane = dialog.getDialogPane();
+        if (pane == null) {
+            return;
+        }
+        URL cssUrl = ProfileController.class.getResource("/com/lost_coding_helper/styles.css");
+        if (cssUrl != null && !pane.getStylesheets().contains(cssUrl.toExternalForm())) {
+            pane.getStylesheets().add(cssUrl.toExternalForm());
+        }
+        if (styleClasses != null && !styleClasses.isBlank()) {
+            for (String styleClass : styleClasses.split("\\s+")) {
+                if (!styleClass.isBlank() && !pane.getStyleClass().contains(styleClass)) {
+                    pane.getStyleClass().add(styleClass);
+                }
+            }
+        }
+    }
+
+    @FXML
+    private void changeDisplayName() {
+        User user = getCurrentUser();
+        if (user == null) {
+            showInfo("Profile", "Sign in first to edit your profile.");
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog(user.getDisplayName());
+        dialog.setTitle("Change Display Name");
+        dialog.setHeaderText(null);
+        dialog.setContentText("New display name:");
+        themeDialog(dialog, "profile-dialog");
+        dialog.showAndWait().ifPresent(input -> {
+            String before = user.getDisplayName();
+            user.setDisplayName(input);
+            if (!safeText(before, "").equals(user.getDisplayName())) {
+                displayNameValueLabel.setText(user.getDisplayName());
+                saveUsersSilently();
+            } else {
+                showError("Invalid Name", "Display name must be 3-25 characters.");
+            }
+        });
+    }
+
+    @FXML
+    private void changeUsername() {
+        User user = getCurrentUser();
+        if (user == null) {
+            showInfo("Profile", "Sign in first to edit your profile.");
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog(user.getUsername());
+        dialog.setTitle("Change Username");
+        dialog.setHeaderText(null);
+        dialog.setContentText("New username:");
+        themeDialog(dialog, "profile-dialog");
+        dialog.showAndWait().ifPresent(input -> {
+            if (!user.setUsername(input)) {
+                showError("Invalid Username", "Username must be 3-25 characters and use letters, numbers, or underscores.");
+                return;
+            }
+            usernameValueLabel.setText(user.getUsername());
+            saveUsersSilently();
+        });
+    }
+
+    @FXML
+    private void changeEmail() {
+        User user = getCurrentUser();
+        if (user == null) {
+            showInfo("Profile", "Sign in first to edit your profile.");
+            return;
+        }
+        TextInputDialog dialog = new TextInputDialog(user.getEmail());
+        dialog.setTitle("Change Email");
+        dialog.setHeaderText(null);
+        dialog.setContentText("New email:");
+        themeDialog(dialog, "profile-dialog");
+        dialog.showAndWait().ifPresent(input -> {
+            if (!user.setEmail(input)) {
+                showError("Invalid Email", "Please enter a valid email address.");
+                return;
+            }
+            emailValueLabel.setText(user.getEmail());
+            saveUsersSilently();
+        });
+    }
+
+    @FXML
+    private void changePassword() {
+        User user = getCurrentUser();
+        if (user == null) {
+            showInfo("Profile", "Sign in first to edit your profile.");
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Change Password");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        themeDialog(dialog, "profile-dialog");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.getStyleClass().add("profile-dialog-grid");
+
+        PasswordField oldPassword = new PasswordField();
+        PasswordField newPassword = new PasswordField();
+        oldPassword.setPromptText("Current password");
+        newPassword.setPromptText("New password");
+        oldPassword.getStyleClass().add("profile-dialog-field");
+        newPassword.getStyleClass().add("profile-dialog-field");
+        grid.add(new Label("Current:"), 0, 0);
+        grid.add(oldPassword, 1, 0);
+        grid.add(new Label("New:"), 0, 1);
+        grid.add(newPassword, 1, 1);
+        dialog.getDialogPane().setContent(grid);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
+        String beforeHash = user.getHashedPassword();
+        user.changePassword(oldPassword.getText(), newPassword.getText());
+        if (!safeText(beforeHash, "").equals(safeText(user.getHashedPassword(), ""))) {
+            saveUsersSilently();
+            showInfo("Password Updated", "Your password was successfully changed.");
+            return;
+        }
+        showError("Password Not Changed", "Check your current password and ensure the new one has uppercase, lowercase, number, and at least 8 chars.");
+    }
+
+    @FXML
+    private void changeProfilePicture() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose Profile Picture");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg", "*.webp")
+        );
+        File selected = chooser.showOpenDialog(profileImageView.getScene().getWindow());
+        if (selected == null) {
+            return;
+        }
+        loadProfileImage(selected.toURI().toString(), selected.toPath());
+    }
+
+    private void loadProfileImage(String classpath, Path fsPath) {
+        URL fromClasspath = ProfileController.class.getResource(classpath);
+        if (fromClasspath != null) {
+            profileImageView.setImage(new Image(fromClasspath.toExternalForm(), true));
+            return;
+        }
+        if (Files.exists(fsPath)) {
+            profileImageView.setImage(new Image(fsPath.toUri().toString(), true));
+        }
+    }
+
+    @FXML
+    private void logOut() throws IOException {
+        ProblemApplication app = App.getApplication();
+        if (app != null) {
+            app.logOut();
+        }
+        App.setAuthInitialView(App.AuthInitialView.LOGIN);
+        App.setRoot("login");
+    }
 
     @FXML
     private void navHome() throws IOException {

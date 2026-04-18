@@ -16,6 +16,8 @@ import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -261,12 +263,30 @@ public class HomeController {
             return;
         }
         String file = streakImageFileFor(streak);
-        URL url = HomeController.class.getResource(STREAK_IMAGE_PREFIX + file);
+        URL url = resolveStreakImage(file);
         if (url == null) {
-            url = HomeController.class.getResource(STREAK_IMAGE_PREFIX + "0.png");
+            url = resolveStreakImage("0.png");
         }
         if (url != null) {
             streakImageView.setImage(new Image(url.toExternalForm(), true));
+        }
+    }
+
+    private URL resolveStreakImage(String fileName) {
+        URL classpathUrl = HomeController.class.getResource(STREAK_IMAGE_PREFIX + fileName);
+        if (classpathUrl != null) {
+            return classpathUrl;
+        }
+
+        Path fsPath = Path.of("src", "main", "resources", "com", "lost_coding_helper", "streak_images", fileName);
+        if (!Files.exists(fsPath)) {
+            return null;
+        }
+
+        try {
+            return fsPath.toUri().toURL();
+        } catch (IOException ignored) {
+            return null;
         }
     }
 

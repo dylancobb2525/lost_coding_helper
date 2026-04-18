@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -13,16 +14,84 @@
    <children>
       <VBox spacing="0.0">
          <children>
-            <VBox spacing="10.0">
+            <StackPane styleClass="profile-header-wrap">
                <children>
-                  <Label styleClass="title-section" text="Profile" />
-                  <Label styleClass="hint-muted" text="Coming soon" />
+                  <Label styleClass="profile-screen-title" text="Settings &amp; User" StackPane.alignment="CENTER" />
+                  <HBox alignment="CENTER_LEFT" maxWidth="Infinity" StackPane.alignment="CENTER_LEFT">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#navHome" styleClass="profile-back-button" focusTraversable="false">
+                           <graphic>
+                              <SVGPath styleClass="profile-back-arrow" content="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
                <padding>
-                  <Insets bottom="18.0" left="22.0" right="22.0" top="22.0" />
+                  <Insets bottom="8.0" left="12.0" right="12.0" top="12.0" />
                </padding>
+            </StackPane>
+            <VBox spacing="0.0" styleClass="profile-body" VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox spacing="6.0" styleClass="profile-body-inner">
+                     <children>
+                        <VBox alignment="TOP_CENTER" spacing="8.0">
+                           <children>
+                              <StackPane styleClass="profile-avatar-shell profile-avatar-shell-compact">
+                                 <children>
+                                    <ImageView fx:id="profileImageView" fitHeight="88.0" fitWidth="88.0" pickOnBounds="true" preserveRatio="false" />
+                                 </children>
+                              </StackPane>
+                              <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="2.0" styleClass="profile-fields">
+                                 <children>
+                                    <Label styleClass="profile-label" text="Display name" />
+                                    <Label fx:id="displayNameValueLabel" styleClass="profile-value-field" text="Alex" />
+                                    <Label styleClass="profile-label" text="Username" />
+                                    <Label fx:id="usernameValueLabel" styleClass="profile-value-field" text="TheLOTSCoder" />
+                                    <Label styleClass="profile-label" text="Email" />
+                                    <Label fx:id="emailValueLabel" maxWidth="Infinity" styleClass="profile-value-field" text="TheLotsCoder@gmail.com" wrapText="true" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <VBox spacing="5.0" styleClass="profile-actions">
+                           <children>
+                              <Button contentDisplay="RIGHT" maxWidth="Infinity" mnemonicParsing="false" onAction="#changeProfilePicture" styleClass="profile-action-button" text="Edit Profile Picture">
+                                 <graphic>
+                                    <Label styleClass="profile-pencil" text="✎" />
+                                 </graphic>
+                              </Button>
+                              <Button contentDisplay="RIGHT" maxWidth="Infinity" mnemonicParsing="false" onAction="#changeDisplayName" styleClass="profile-action-button" text="Change Display name">
+                                 <graphic>
+                                    <Label styleClass="profile-pencil" text="✎" />
+                                 </graphic>
+                              </Button>
+                              <Button contentDisplay="RIGHT" maxWidth="Infinity" mnemonicParsing="false" onAction="#changeUsername" styleClass="profile-action-button" text="Change Username">
+                                 <graphic>
+                                    <Label styleClass="profile-pencil" text="✎" />
+                                 </graphic>
+                              </Button>
+                              <Button contentDisplay="RIGHT" maxWidth="Infinity" mnemonicParsing="false" onAction="#changeEmail" styleClass="profile-action-button" text="Change Email">
+                                 <graphic>
+                                    <Label styleClass="profile-pencil" text="✎" />
+                                 </graphic>
+                              </Button>
+                              <Button contentDisplay="RIGHT" maxWidth="Infinity" mnemonicParsing="false" onAction="#changePassword" styleClass="profile-action-button" text="Change password">
+                                 <graphic>
+                                    <Label styleClass="profile-pencil" text="✎" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </VBox>
+                        <Button alignment="CENTER" maxWidth="Infinity" mnemonicParsing="false" onAction="#logOut" styleClass="profile-logout-button" text="Log out" />
+                     </children>
+                     <padding>
+                        <Insets bottom="8.0" left="20.0" right="20.0" top="4.0" />
+                     </padding>
+                  </VBox>
+                  <Region styleClass="profile-fill" VBox.vgrow="ALWAYS" />
+               </children>
             </VBox>
-            <Region VBox.vgrow="ALWAYS" />
             <HBox alignment="CENTER" spacing="18.0" styleClass="nav-bar">
                <children>
                   <Button mnemonicParsing="false" onAction="#navLeaderboard" styleClass="nav-icon">
@@ -52,11 +121,10 @@
                   </Button>
                </children>
                <padding>
-                  <Insets bottom="10.0" left="18.0" right="18.0" top="10.0" />
+                  <Insets bottom="8.0" left="18.0" right="18.0" top="8.0" />
                </padding>
             </HBox>
          </children>
       </VBox>
    </children>
 </StackPane>
-

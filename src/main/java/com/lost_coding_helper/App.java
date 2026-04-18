@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.net.URL;
 
 /**
@@ -31,7 +33,7 @@ public class App extends Application {
         application.init();
 
         scene = new Scene(loadFXML("home"), 390, 780);
-        URL cssUrl = App.class.getResource("styles.css");
+        URL cssUrl = resolveResource("styles.css");
         if (cssUrl == null) {
             throw new IllegalStateException("Missing CSS resource: styles.css");
         }
@@ -64,8 +66,21 @@ public class App extends Application {
         scene.setRoot(loadFXML(fxml));
     }
 
+    private static URL resolveResource(String resourceName) throws IOException {
+        URL classpathUrl = App.class.getResource(resourceName);
+        if (classpathUrl != null) {
+            return classpathUrl;
+        }
+
+        Path fsPath = Path.of("src", "main", "resources", "com", "lost_coding_helper", resourceName);
+        if (Files.exists(fsPath)) {
+            return fsPath.toUri().toURL();
+        }
+        return null;
+    }
+
     private static Parent loadFXML(String fxml) throws IOException {
-        URL url = App.class.getResource(fxml + ".fxml");
+        URL url = resolveResource(fxml + ".fxml");
         if (url == null) {
             throw new IllegalStateException("Missing FXML resource: " + fxml + ".fxml");
         }
