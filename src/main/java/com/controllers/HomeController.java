@@ -358,7 +358,7 @@ public class HomeController {
 
     @FXML
     private void navHelp() throws IOException {
-        App.setRoot("help");
+        App.setRoot("questions");
     }
 
     @FXML

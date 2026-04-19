@@ -58,4 +58,14 @@ public class DataConstants {
     public static final String QUESTION_SOLUTIONS = "solutions";
     public static final String QUESTION_COMMENTS = "comments";
     public static final String QUESTION_ATTACHMENTS = "attachments";
+
+    public static final String SOLUTION_ID = "id";
+    public static final String SOLUTION_QUESTION_ID = "questionId";
+    public static final String SOLUTION_AUTHOR_ID = "authorId";
+    public static final String SOLUTION_CODE = "code";
+    public static final String SOLUTION_LANGUAGE = "language";
+    public static final String SOLUTION_EXPLANATION = "explanation";
+    public static final String SOLUTION_CREATED_AT = "createdAt";
+    public static final String SOLUTION_UPDATED_AT = "updatedAt";
+    public static final String SOLUTION_VOTE_COUNT = "voteCount";
 }

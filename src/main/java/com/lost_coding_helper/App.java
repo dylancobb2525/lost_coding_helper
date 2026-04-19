@@ -1,17 +1,19 @@
 package com.lost_coding_helper;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import com.model.ProblemApplication;
+import com.model.Question;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 
 /**
  * JavaFX App
@@ -27,6 +29,8 @@ public class App extends Application {
     private static Scene scene;
     private static ProblemApplication application;
     private static AuthInitialView authInitialView = AuthInitialView.LOGIN;
+    private static UUID selectedQuestionId;
+    private static Question selectedQuestion;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -65,6 +69,22 @@ public class App extends Application {
 
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
+    }
+
+    public static void setSelectedQuestionId(UUID questionId) {
+        selectedQuestionId = questionId;
+    }
+
+    public static UUID getSelectedQuestionId() {
+        return selectedQuestionId;
+    }
+
+    public static void setSelectedQuestion(Question question) {
+        selectedQuestion = question;
+    }
+
+    public static Question getSelectedQuestion() {
+        return selectedQuestion;
     }
 
     private static URL resolveResource(String resourceName) throws IOException {

@@ -73,6 +73,7 @@ public class DataLoader extends DataConstants {
             for (int i = 0; i < questionsJSON.size(); i++) {
                 JSONObject questionJSON = (JSONObject) questionsJSON.get(i);
                 UUID id = parseUUID((String) questionJSON.get(QUESTION_ID));
+                if (id == null) id = UUID.randomUUID();
                 String title = (String) questionJSON.get(QUESTION_TITLE);
                 String prompt = (String) questionJSON.get(QUESTION_PROMPT);
                 String difficulty = (String) questionJSON.get(QUESTION_DIFFICULTY);
@@ -90,6 +91,10 @@ public class DataLoader extends DataConstants {
                     for (int v = 0; v < voteCount; v++) {
                         question.upvote(null);
                     }
+                }
+                JSONArray solutionsJson = getJSONArray(questionJSON, QUESTION_SOLUTIONS);
+                for (Solution solution : parseSolutions(solutionsJson, id)) {
+                    question.addSolution(solution);
                 }
                 questions.add(question);
             }
@@ -180,6 +185,39 @@ public class DataLoader extends DataConstants {
         if (arr == null) return list;
         for (Object o : arr) {
             if (o != null) list.add(o.toString());
+        }
+        return list;
+    }
+
+    /**
+     * Parses {@code solutions} JSON for one question. {@code authorId} {@code null} means a course-provided reference.
+     */
+    private static ArrayList<Solution> parseSolutions(JSONArray arr, UUID defaultQuestionId) {
+        ArrayList<Solution> list = new ArrayList<>();
+        if (arr == null) {
+            return list;
+        }
+        for (Object o : arr) {
+            if (!(o instanceof JSONObject)) {
+                continue;
+            }
+            JSONObject sj = (JSONObject) o;
+            UUID sid = parseUUID((String) sj.get(SOLUTION_ID));
+            if (sid == null) {
+                sid = UUID.randomUUID();
+            }
+            UUID qid = parseUUID((String) sj.get(SOLUTION_QUESTION_ID));
+            if (qid == null) {
+                qid = defaultQuestionId;
+            }
+            UUID authorId = parseUUID((String) sj.get(SOLUTION_AUTHOR_ID));
+            String code = (String) sj.get(SOLUTION_CODE);
+            String language = (String) sj.get(SOLUTION_LANGUAGE);
+            String explanation = (String) sj.get(SOLUTION_EXPLANATION);
+            LocalDateTime createdAt = parseDateTime((String) sj.get(SOLUTION_CREATED_AT));
+            LocalDateTime updatedAt = parseDateTime((String) sj.get(SOLUTION_UPDATED_AT));
+            int votes = parseVoteCount(sj.get(SOLUTION_VOTE_COUNT));
+            list.add(new Solution(sid, qid, authorId, code, language, explanation, createdAt, updatedAt, votes));
         }
         return list;
     }

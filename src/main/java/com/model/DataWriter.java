@@ -237,9 +237,32 @@ public class DataWriter extends DataConstants {
         obj.put(QUESTION_CREATED_AT, q.getCreatedAt() != null ? q.getCreatedAt().toString() : null);
         obj.put(QUESTION_STATUS, q.getStatus() != null ? q.getStatus().toString() : null);
         obj.put(QUESTION_VOTE_COUNT, q.getVoteCount());
-        obj.put(QUESTION_SOLUTIONS, new JSONArray());
+        JSONArray solutions = new JSONArray();
+        if (q.getSolutions() != null) {
+            for (Solution s : q.getSolutions()) {
+                if (s != null) {
+                    solutions.add(solutionToJson(s));
+                }
+            }
+        }
+        obj.put(QUESTION_SOLUTIONS, solutions);
         obj.put(QUESTION_COMMENTS, new JSONArray());
         obj.put(QUESTION_ATTACHMENTS, new JSONArray());
+        return obj;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static JSONObject solutionToJson(Solution s) {
+        JSONObject obj = new JSONObject();
+        obj.put(SOLUTION_ID, s.getId() != null ? s.getId().toString() : null);
+        obj.put(SOLUTION_QUESTION_ID, s.getQuestionId() != null ? s.getQuestionId().toString() : null);
+        obj.put(SOLUTION_AUTHOR_ID, s.getAuthorId() != null ? s.getAuthorId().toString() : null);
+        obj.put(SOLUTION_CODE, s.getCode());
+        obj.put(SOLUTION_LANGUAGE, s.getLanguage());
+        obj.put(SOLUTION_EXPLANATION, s.getExplanation());
+        obj.put(SOLUTION_CREATED_AT, s.getCreatedAt() != null ? s.getCreatedAt().toString() : null);
+        obj.put(SOLUTION_UPDATED_AT, s.getUpdatedAt() != null ? s.getUpdatedAt().toString() : null);
+        obj.put(SOLUTION_VOTE_COUNT, s.getVoteCount());
         return obj;
     }
 

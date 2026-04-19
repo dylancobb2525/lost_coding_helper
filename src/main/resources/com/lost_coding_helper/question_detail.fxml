@@ -2,45 +2,39 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.HelpController">
+<StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.QuestionDetailController">
    <children>
       <VBox spacing="0.0">
          <children>
             <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="home-scroll" VBox.vgrow="ALWAYS">
                <content>
-                  <VBox spacing="16.0" styleClass="question-tab-root">
+                  <VBox spacing="14.0" styleClass="question-tab-root">
                      <children>
-                        <TextField fx:id="searchField" promptText="Search" styleClass="question-search-field" />
-
-                        <VBox spacing="10.0">
-                           <children>
-                              <Label styleClass="section-title" text="Topics" />
-                              <FlowPane fx:id="topicFiltersPane" hgap="10.0" vgap="10.0" />
-                           </children>
-                        </VBox>
-
-                        <VBox spacing="10.0">
-                           <children>
-                              <Label styleClass="section-title" text="Interview prep" />
-                              <FlowPane fx:id="companyFiltersPane" hgap="10.0" vgap="10.0" />
-                           </children>
-                        </VBox>
-
-                        <VBox spacing="10.0">
-                           <children>
-                              <Label fx:id="allQuestionsLabel" styleClass="section-title" text="All questions" />
-                              <VBox fx:id="questionListPane" spacing="10.0" />
-                           </children>
-                        </VBox>
+                        <Button mnemonicParsing="false" onAction="#backToQuestions" styleClass="button-pill-outline button-small" text="← Back to questions" />
+                        <Label fx:id="questionTitleLabel" styleClass="title-section" text="Question" wrapText="true" />
+                        <Label fx:id="questionMetaLabel" styleClass="card-meta" text="Difficulty: Easy" />
+                        <Label fx:id="questionTopicsLabel" styleClass="hint-muted" text="Topics: None" wrapText="true" />
+                        <Label fx:id="questionCompaniesLabel" styleClass="hint-muted" text="Companies: None" wrapText="true" />
+                        <Label text="Prompt" styleClass="section-title" />
+                        <Label fx:id="questionPromptLabel" styleClass="question-prompt" text="Prompt text" wrapText="true" />
+                        <Label text="Official solution (for this question)" styleClass="section-title" />
+                        <VBox fx:id="providedSolutionsContainer" spacing="10.0" />
+                        <Label text="Your solution" styleClass="section-title" />
+                        <Label styleClass="field-label" text="Language" />
+                        <ComboBox fx:id="languageCombo" maxWidth="Infinity" styleClass="question-language-combo" />
+                        <TextArea fx:id="solutionCodeArea" prefRowCount="9" promptText="Write your solution here…" styleClass="question-editor" wrapText="true" />
+                        <Button mnemonicParsing="false" onAction="#saveMySolution" styleClass="button-pill-outline" text="Save my solution" />
+                        <Button mnemonicParsing="false" onAction="#markComplete" styleClass="button-pill-primary" text="Mark complete" />
+                        <Label fx:id="completionStatusLabel" styleClass="hint-muted" text="Read the official solution, work on yours, then mark complete when ready." wrapText="true" />
                      </children>
                      <padding>
                         <Insets bottom="20.0" left="22.0" right="22.0" top="22.0" />
@@ -84,4 +78,3 @@
       </VBox>
    </children>
 </StackPane>
-

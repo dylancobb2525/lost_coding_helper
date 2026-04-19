@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.HelpController">
+<StackPane styleClass="screen-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.QuestionsController">
    <children>
       <VBox spacing="0.0">
          <children>
@@ -30,7 +30,7 @@
 
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="section-title" text="Interview prep" />
+                              <Label styleClass="section-title" text="Companies" />
                               <FlowPane fx:id="companyFiltersPane" hgap="10.0" vgap="10.0" />
                            </children>
                         </VBox>
@@ -84,4 +84,3 @@
       </VBox>
    </children>
 </StackPane>
-

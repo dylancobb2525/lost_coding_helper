@@ -194,7 +194,7 @@ public class LeaderboardController {
 
     @FXML
     private void navHelp() throws IOException {
-        App.setRoot("help");
+        App.setRoot("questions");
     }
 
     @FXML
