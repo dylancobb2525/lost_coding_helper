@@ -1,14 +1,15 @@
 package com.lost_coding_helper;
 
+import java.io.IOException;
+import java.net.URL;
+
 import com.model.ProblemApplication;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * JavaFX App
