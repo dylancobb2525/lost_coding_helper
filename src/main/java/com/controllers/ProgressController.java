@@ -4,25 +4,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.lost_coding_helper.App;
-import com.model.ProblemApplication;
 import com.model.Question;
 import com.model.User;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
 
 public class ProgressController {
 
@@ -49,27 +43,53 @@ public class ProgressController {
             return;
         }
 
-        if (streakValueLabel != null) {
-            streakValueLabel.setText(String.valueOf(user.getStreak()));
-        }
-
+        int streakCount = user.getStreak();
         int solvedCount = user.getProgressTracker() != null
                 ? user.getProgressTracker().getCurrentCount()
                 : 0;
+        int achievementCount = user.getAchievementIds() != null
+                ? user.getAchievementIds().size()
+                : 0;
+
+        ArrayList<BadgeInfo> earnedBadges = getEarnedBadges(streakCount, solvedCount, achievementCount);
+
+        if (streakValueLabel != null) {
+            streakValueLabel.setText(String.valueOf(streakCount));
+        }
         if (solvedValueLabel != null) {
             solvedValueLabel.setText(String.valueOf(solvedCount));
         }
-
-        int badgeCount = user.getAchievementIds() != null
-                ? user.getAchievementIds().size()
-                : 0;
         if (badgesValueLabel != null) {
-            badgesValueLabel.setText(String.valueOf(badgeCount));
+            badgesValueLabel.setText(String.valueOf(earnedBadges.size()));
         }
 
-        setBadges(user, badgeCount);
+        setBadges(earnedBadges);
         setCompletedQuestions(user);
         setFavoriteQuestions(user);
+    }
+
+    private ArrayList<BadgeInfo> getEarnedBadges(int streakCount, int solvedCount, int achievementCount) {
+        ArrayList<BadgeInfo> badges = new ArrayList<>();
+
+        addBadgeIfEarned(badges, streakCount, 10, "10 Day Streak", "streak_10_badge.png");
+        addBadgeIfEarned(badges, streakCount, 50, "50 Day Streak", "streak_50_badge.png");
+        addBadgeIfEarned(badges, streakCount, 100, "100 Day Streak", "streak_100_badge.png");
+
+        addBadgeIfEarned(badges, solvedCount, 10, "10 Solved", "solved_10_badge.png");
+        addBadgeIfEarned(badges, solvedCount, 50, "50 Solved", "solved_50_badge.png");
+        addBadgeIfEarned(badges, solvedCount, 100, "100 Solved", "solved_100_badge.png");
+
+        addBadgeIfEarned(badges, achievementCount, 5, "5 Achievements", "achievement_5_badge.png");
+        addBadgeIfEarned(badges, achievementCount, 10, "10 Achievements", "achievement_10_badge.png");
+        addBadgeIfEarned(badges, achievementCount, 20, "20 Achievements", "achievement_20_badge.png");
+        
+        return badges;
+    }
+
+    private void addBadgeIfEarned(ArrayList<BadgeInfo> badges, int currentValue, int targetValue, String label, String fileName) {
+        if (currentValue >= targetValue) {
+            badges.add(new BadgeInfo(label, fileName));
+        }
     }
 
     private void setGuestState() {
@@ -99,24 +119,24 @@ public class ProgressController {
         }
     }
 
-    private void setBadges(User user, int badgeCount) {
+    private void setBadges(List<BadgeInfo> earnedBadges) {
         if (badgesPane == null) {
             return;
         }
 
         badgesPane.getChildren().clear();
 
-        if (badgeCount <= 0) {
+        if (earnedBadges == null || earnedBadges.isEmpty()) {
             badgesPane.getChildren().add(makeMutedLabel("No badges earned yet"));
             return;
         }
 
-        for (int i = 0; i < badgeCount; i++) {
-            badgesPane.getChildren().add(makeBadgeItem(i));
+        for (BadgeInfo badge : earnedBadges) {
+            badgesPane.getChildren().add(makeBadgeItem(badge));
         }
     }
 
-    private VBox makeBadgeItem(int index) {
+    private VBox makeBadgeItem(BadgeInfo badge) {
         VBox badgeBox = new VBox(6);
         badgeBox.setAlignment(Pos.CENTER);
         badgeBox.getStyleClass().add("badge-item");
@@ -126,39 +146,17 @@ public class ProgressController {
         imageView.setFitHeight(42);
         imageView.setPreserveRatio(true);
 
-        String fileName = badgeFileName(index);
-        URL url = ProgressController.class.getResource(BADGE_IMAGE_PREFIX + fileName);
+        URL url = ProgressController.class.getResource(BADGE_IMAGE_PREFIX + badge.fileName);
         if (url != null) {
             imageView.setImage(new Image(url.toExternalForm(), true));
         }
 
-        Label label = new Label(badgeLabel(index));
+        Label label = new Label(badge.label);
         label.getStyleClass().add("badge-label");
+        label.setWrapText(true);
 
         badgeBox.getChildren().addAll(imageView, label);
         return badgeBox;
-    }
-
-    private String badgeFileName(int index) {
-        switch (index % 3) {
-            case 0:
-                return "streak_badge.png";
-            case 1:
-                return "solved_badge.png";
-            default:
-                return "achievement_badge.png";
-        }
-    }
-
-    private String badgeLabel(int index) {
-        switch (index % 3) {
-            case 0:
-                return "Streak";
-            case 1:
-                return "Solved";
-            default:
-                return "Achievement";
-        }
     }
 
     private void setCompletedQuestions(User user) {
@@ -177,7 +175,7 @@ public class ProgressController {
             return;
         }
 
-        addQuestionTitles(completedQuestionsList, completed, completed.size(), "No completed questions yet");
+        addQuestionTitles(completedQuestionsList, completed, 3, "No completed questions yet");
     }
 
     private void setFavoriteQuestions(User user) {
@@ -193,53 +191,7 @@ public class ProgressController {
             return;
         }
 
-        addFavoriteQuestionRows(favorites);
-    }
-
-    private void addFavoriteQuestionRows(List<Question> favorites) {
-        for (Question question : favorites) {
-            if (question == null || question.getTitle() == null || question.getTitle().isBlank()) {
-                continue;
-            }
-            favoriteQuestionsList.getChildren().add(makeFavoriteRow(question));
-        }
-    }
-
-    private HBox makeFavoriteRow(Question q) {
-        HBox row = new HBox(10);
-        row.setAlignment(Pos.CENTER_LEFT);
-        row.getStyleClass().add("progress-list-item");
-
-        SVGPath star = new SVGPath();
-        star.getStyleClass().addAll("favorites-star", "favorites-star-clickable");
-        star.setContent("M12 2l2.9 6.6 7.1.6-5.4 4.6 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z");
-        star.setPickOnBounds(true);
-        star.setCursor(Cursor.HAND);
-        star.setOnMouseClicked(e -> confirmRemoveFavorite(q));
-
-        Label label = new Label(q.getTitle());
-        label.getStyleClass().add("progress-list-label");
-
-        row.getChildren().addAll(star, label);
-        return row;
-    }
-
-    private void confirmRemoveFavorite(Question q) {
-        ProblemApplication app = App.getApplication();
-        User user = app != null ? app.getCurrentUser() : null;
-        if (app == null || user == null || q == null || !user.isFavoriteProblem(q)) {
-            return;
-        }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Remove favorite");
-        alert.setHeaderText(null);
-        String name = q.getTitle() != null && !q.getTitle().isBlank() ? q.getTitle() : "this problem";
-        alert.setContentText("Remove \"" + name + "\" from your favorites?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            app.toggleFavoriteForCurrentUser(q);
-            setProgress();
-        }
+        addQuestionTitles(favoriteQuestionsList, favorites, 3, "No favorite questions yet");
     }
 
     private void addQuestionTitles(VBox container, List<Question> questions, int limit, String fallback) {
@@ -308,11 +260,21 @@ public class ProgressController {
 
     @FXML
     private void navHelp() throws IOException {
-        App.setRoot("questions");
+        App.setRoot("help");
     }
 
     @FXML
     private void navProfile() throws IOException {
         App.setRoot("profile");
+    }
+
+    private static class BadgeInfo {
+        private final String label;
+        private final String fileName;
+
+        private BadgeInfo(String label, String fileName) {
+            this.label = label;
+            this.fileName = fileName;
+        }
     }
 }

@@ -924,6 +924,7 @@
     -fx-text-fill: #4a3737;
     -fx-font-size: 12px;
     -fx-font-weight: 900;
+    -fx-min-width: 60px;
 }
 
 .nav-icon:focused,

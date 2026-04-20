@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class LeaderboardController {
@@ -79,7 +80,7 @@ public class LeaderboardController {
         }
 
         nameLabel.setText(getDisplayName(user));
-        valueLabel.setText(user.getStreak() + " days");
+        valueLabel.setText(formatDayLabel(user.getStreak()));
     }
 
     private void setRankList(List<User> users) {
@@ -104,20 +105,27 @@ public class LeaderboardController {
         Label nameLabel = new Label(getDisplayName(user));
         nameLabel.getStyleClass().add("leaderboard-name");
 
-        Label streakLabel = new Label(user.getStreak() + " days");
+        Label streakLabel = new Label(formatDayLabel(user.getStreak()));
         streakLabel.getStyleClass().add("leaderboard-streak");
+        streakLabel.setMinWidth(60);
 
         Label recentProblemLabel = new Label(getLastCompletedText(user));
         recentProblemLabel.getStyleClass().add("leaderboard-last-problem");
+        recentProblemLabel.setWrapText(false);
 
         VBox textBlock = new VBox(2);
         textBlock.getChildren().addAll(nameLabel, recentProblemLabel);
+        HBox.setHgrow(textBlock, Priority.ALWAYS);
 
-        HBox spacer = new HBox();
+        Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         row.getChildren().addAll(rankLabel, textBlock, spacer, streakLabel);
         return row;
+    }
+
+    private String formatDayLabel(int streak) {
+        return streak + (streak == 1 ? " day" : " days");
     }
 
     private String getLastCompletedText(User user) {
@@ -194,7 +202,7 @@ public class LeaderboardController {
 
     @FXML
     private void navHelp() throws IOException {
-        App.setRoot("questions");
+        App.setRoot("help");
     }
 
     @FXML
