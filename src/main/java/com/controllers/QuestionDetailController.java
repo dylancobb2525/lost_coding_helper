@@ -7,6 +7,7 @@ import com.model.Solution;
 import com.model.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -46,6 +47,9 @@ public class QuestionDetailController {
 
     @FXML
     private VBox providedSolutionsContainer;
+
+    @FXML
+    private Button favoriteButton;
 
     private Question selectedQuestion;
 
@@ -105,7 +109,28 @@ public class QuestionDetailController {
         if (completionStatusLabel != null) {
             completionStatusLabel.setText("Official solutions are shown below for you to read and compare yourself.");
         }
+        refreshFavoriteButton();
         refreshOfficialSolutions();
+    }
+
+    private void refreshFavoriteButton() {
+        if (favoriteButton == null) {
+            return;
+        }
+        ProblemApplication app = App.getApplication();
+        User user = app != null ? app.getCurrentUser() : null;
+        if (user == null || selectedQuestion == null) {
+            favoriteButton.setDisable(true);
+            favoriteButton.setText("Favorites");
+            return;
+        }
+        if (!user.canFavoriteProblems()) {
+            favoriteButton.setDisable(true);
+            favoriteButton.setText("Favorites (account only)");
+            return;
+        }
+        favoriteButton.setDisable(false);
+        favoriteButton.setText(user.isFavoriteProblem(selectedQuestion) ? "Remove from favorites" : "Add to favorites");
     }
 
     /**
@@ -233,6 +258,30 @@ public class QuestionDetailController {
         app.markCompleted(selectedQuestion.getId(), 0);
         if (completionStatusLabel != null) {
             completionStatusLabel.setText("Marked complete.");
+        }
+    }
+
+    @FXML
+    private void toggleFavorite() {
+        ProblemApplication app = App.getApplication();
+        User user = app != null ? app.getCurrentUser() : null;
+        if (app == null || selectedQuestion == null || selectedQuestion.getId() == null) {
+            return;
+        }
+        if (user == null) {
+            showInfo("Sign in required", "Sign in to favorite questions.");
+            return;
+        }
+        if (!user.canFavoriteProblems()) {
+            showInfo("Guest limitation", "Create an account to save favorite problems.");
+            return;
+        }
+        boolean favorited = app.toggleFavoriteForCurrentUser(selectedQuestion);
+        refreshFavoriteButton();
+        if (completionStatusLabel != null) {
+            completionStatusLabel.setText(favorited
+                    ? "Saved to your favorites (home and progress)."
+                    : "Removed from favorites.");
         }
     }
 

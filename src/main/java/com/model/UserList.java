@@ -1,6 +1,7 @@
 package com.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -33,6 +34,42 @@ public class UserList {
     public void addAll(ArrayList<User> loadedUsers) {
         if (loadedUsers != null) {
             users.addAll(loadedUsers);
+        }
+    }
+
+    /**
+     * After questions are loaded, wires favorite and completed question ids to real {@link Question} objects.
+     */
+    public void hydrateQuestionReferences(QuestionList questionList) {
+        if (questionList == null) {
+            return;
+        }
+        ArrayList<Question> all = questionList.getAll();
+        HashMap<UUID, Question> byId = new HashMap<>();
+        for (Question q : all) {
+            if (q != null && q.getId() != null) {
+                byId.put(q.getId(), q);
+            }
+        }
+        for (User user : users) {
+            ArrayList<Question> favQs = new ArrayList<>();
+            for (UUID id : new ArrayList<>(user.getFavoritedProblemIds())) {
+                Question q = byId.get(id);
+                if (q != null) {
+                    favQs.add(q);
+                }
+            }
+            user.setFavoriteProblems(favQs);
+
+            ArrayList<Question> done = new ArrayList<>();
+            for (UUID id : user.getPendingCompletedProblemIds()) {
+                Question q = byId.get(id);
+                if (q != null) {
+                    done.add(q);
+                }
+            }
+            user.getProgressTracker().replaceCompletedList(done);
+            user.getPendingCompletedProblemIds().clear();
         }
     }
 

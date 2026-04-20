@@ -4,19 +4,25 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.lost_coding_helper.App;
+import com.model.ProblemApplication;
 import com.model.Question;
 import com.model.User;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 
 public class ProgressController {
 
@@ -171,7 +177,7 @@ public class ProgressController {
             return;
         }
 
-        addQuestionTitles(completedQuestionsList, completed, 3, "No completed questions yet");
+        addQuestionTitles(completedQuestionsList, completed, completed.size(), "No completed questions yet");
     }
 
     private void setFavoriteQuestions(User user) {
@@ -187,7 +193,53 @@ public class ProgressController {
             return;
         }
 
-        addQuestionTitles(favoriteQuestionsList, favorites, 3, "No favorite questions yet");
+        addFavoriteQuestionRows(favorites);
+    }
+
+    private void addFavoriteQuestionRows(List<Question> favorites) {
+        for (Question question : favorites) {
+            if (question == null || question.getTitle() == null || question.getTitle().isBlank()) {
+                continue;
+            }
+            favoriteQuestionsList.getChildren().add(makeFavoriteRow(question));
+        }
+    }
+
+    private HBox makeFavoriteRow(Question q) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getStyleClass().add("progress-list-item");
+
+        SVGPath star = new SVGPath();
+        star.getStyleClass().addAll("favorites-star", "favorites-star-clickable");
+        star.setContent("M12 2l2.9 6.6 7.1.6-5.4 4.6 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z");
+        star.setPickOnBounds(true);
+        star.setCursor(Cursor.HAND);
+        star.setOnMouseClicked(e -> confirmRemoveFavorite(q));
+
+        Label label = new Label(q.getTitle());
+        label.getStyleClass().add("progress-list-label");
+
+        row.getChildren().addAll(star, label);
+        return row;
+    }
+
+    private void confirmRemoveFavorite(Question q) {
+        ProblemApplication app = App.getApplication();
+        User user = app != null ? app.getCurrentUser() : null;
+        if (app == null || user == null || q == null || !user.isFavoriteProblem(q)) {
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Remove favorite");
+        alert.setHeaderText(null);
+        String name = q.getTitle() != null && !q.getTitle().isBlank() ? q.getTitle() : "this problem";
+        alert.setContentText("Remove \"" + name + "\" from your favorites?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            app.toggleFavoriteForCurrentUser(q);
+            setProgress();
+        }
     }
 
     private void addQuestionTitles(VBox container, List<Question> questions, int limit, String fallback) {
@@ -256,7 +308,7 @@ public class ProgressController {
 
     @FXML
     private void navHelp() throws IOException {
-        App.setRoot("help");
+        App.setRoot("questions");
     }
 
     @FXML

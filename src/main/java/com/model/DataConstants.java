@@ -41,7 +41,12 @@ public class DataConstants {
     public static final String USER_ACHIEVEMENT_IDS = "achievementIds";
     public static final String USER_STREAK = "streak";
     public static final String USER_LAST_ACTIVE_DATE = "lastActiveDate";
+    /** ISO date for which {@link #USER_COMPLETIONS_TODAY} applies (typically today). */
+    public static final String USER_COMPLETIONS_DAY = "completionsDay";
+    public static final String USER_COMPLETIONS_TODAY = "completionsToday";
     public static final String USER_FAVORITE_PROBLEMS = "favoriteProblems";
+    public static final String USER_COMPLETED_PROBLEMS = "completedProblemIds";
+    public static final String USER_PROFILE_PHOTO_URI = "profilePhotoUri";
     public static final String USER_PROGRESS_TRACKER_ID = "progressTrackerId";
 
     public static final String QUESTION_ID = "id";

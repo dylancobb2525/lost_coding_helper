@@ -33,6 +33,7 @@
                         <ComboBox fx:id="languageCombo" maxWidth="Infinity" styleClass="question-language-combo" />
                         <TextArea fx:id="solutionCodeArea" prefRowCount="9" promptText="Write your solution here…" styleClass="question-editor" wrapText="true" />
                         <Button mnemonicParsing="false" onAction="#saveMySolution" styleClass="button-pill-outline" text="Save my solution" />
+                        <Button fx:id="favoriteButton" mnemonicParsing="false" onAction="#toggleFavorite" styleClass="button-pill-outline" text="Add to favorites" />
                         <Button mnemonicParsing="false" onAction="#markComplete" styleClass="button-pill-primary" text="Mark complete" />
                         <Label fx:id="completionStatusLabel" styleClass="hint-muted" text="Read the official solution, work on yours, then mark complete when ready." wrapText="true" />
                      </children>

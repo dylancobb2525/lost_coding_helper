@@ -7,7 +7,10 @@ import com.model.ProblemApplication;
 import com.model.Question;
 import com.model.User;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -20,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 public class HomeController {
@@ -74,6 +78,10 @@ public class HomeController {
 
     @FXML
     private VBox favoritesList;
+
+    /** Shown on the dashboard tiles; used when Open is pressed. */
+    private Question dashboardRandomQuestion;
+    private Question dashboardStudyPlanQuestion;
 
     @FXML
     private void initialize() {
@@ -153,26 +161,28 @@ public class HomeController {
         }
 
         ArrayList<Question> all = app.getAllQuestions();
-        Question random = pickRandom(all);
+        dashboardRandomQuestion = pickRandom(all);
         if (randomProblemTitle != null) {
-            randomProblemTitle.setText(random != null && random.getTitle() != null ? random.getTitle() : "Random problem");
+            randomProblemTitle.setText(dashboardRandomQuestion != null && dashboardRandomQuestion.getTitle() != null
+                    ? dashboardRandomQuestion.getTitle() : "Random problem");
         }
         if (randomProblemMeta != null) {
-            randomProblemMeta.setText(metaFor(random, "Easy", "Java"));
+            randomProblemMeta.setText(metaFor(dashboardRandomQuestion, "Easy", "Java"));
         }
         if (randomSnippetLabel != null) {
-            randomSnippetLabel.setText(snippetFor(random, "Pick a problem and start coding."));
+            randomSnippetLabel.setText(snippetFor(dashboardRandomQuestion, "Pick a problem and start coding."));
         }
 
-        Question fromPlan = pickFromStudyPlan(app);
+        dashboardStudyPlanQuestion = pickFromStudyPlan(app);
         if (studyPlanTitle != null) {
-            studyPlanTitle.setText(fromPlan != null && fromPlan.getTitle() != null ? fromPlan.getTitle() : "Study plan");
+            studyPlanTitle.setText(dashboardStudyPlanQuestion != null && dashboardStudyPlanQuestion.getTitle() != null
+                    ? dashboardStudyPlanQuestion.getTitle() : "Study plan");
         }
         if (studyPlanMeta != null) {
-            studyPlanMeta.setText(metaFor(fromPlan, "Easy", "Java"));
+            studyPlanMeta.setText(metaFor(dashboardStudyPlanQuestion, "Easy", "Java"));
         }
         if (studySnippetLabel != null) {
-            studySnippetLabel.setText(snippetFor(fromPlan, "Your plan picks the next best step."));
+            studySnippetLabel.setText(snippetFor(dashboardStudyPlanQuestion, "Your plan picks the next best step."));
         }
 
         if (favoritesList != null) {
@@ -185,7 +195,7 @@ public class HomeController {
                         if (q == null || q.getTitle() == null) {
                             continue;
                         }
-                        favoritesList.getChildren().add(favoriteRow(q.getTitle()));
+                        favoritesList.getChildren().add(favoriteRow(q));
                         shown++;
                         if (shown >= 3) {
                             break;
@@ -201,16 +211,38 @@ public class HomeController {
         }
     }
 
-    private static HBox favoriteRow(String title) {
+    private HBox favoriteRow(Question q) {
         HBox row = new HBox(10);
         row.getStyleClass().add("favorites-row");
         SVGPath star = new SVGPath();
-        star.getStyleClass().add("favorites-star");
+        star.getStyleClass().addAll("favorites-star", "favorites-star-clickable");
         star.setContent("M12 2l2.9 6.6 7.1.6-5.4 4.6 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z");
+        star.setPickOnBounds(true);
+        star.setCursor(Cursor.HAND);
+        star.setOnMouseClicked(e -> confirmRemoveFavorite(q));
+        String title = q.getTitle() != null ? q.getTitle() : "";
         Label label = new Label(title);
         label.getStyleClass().add("favorites-label");
         row.getChildren().addAll(star, label);
         return row;
+    }
+
+    private void confirmRemoveFavorite(Question q) {
+        ProblemApplication app = App.getApplication();
+        User user = app != null ? app.getCurrentUser() : null;
+        if (app == null || user == null || q == null || !user.isFavoriteProblem(q)) {
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Remove favorite");
+        alert.setHeaderText(null);
+        String name = q.getTitle() != null && !q.getTitle().isBlank() ? q.getTitle() : "this problem";
+        alert.setContentText("Remove \"" + name + "\" from your favorites?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            app.toggleFavoriteForCurrentUser(q);
+            applyLoggedInState();
+        }
     }
 
     private static Question pickRandom(List<Question> all) {
@@ -374,5 +406,24 @@ public class HomeController {
     @FXML
     private void openInfo() throws IOException {
         App.setRoot("info");
+    }
+
+    @FXML
+    private void openRandomProblem() throws IOException {
+        openQuestionDetail(dashboardRandomQuestion);
+    }
+
+    @FXML
+    private void openStudyPlanProblem() throws IOException {
+        openQuestionDetail(dashboardStudyPlanQuestion);
+    }
+
+    private static void openQuestionDetail(Question q) throws IOException {
+        if (q == null || q.getId() == null) {
+            return;
+        }
+        App.setSelectedQuestionId(q.getId());
+        App.setSelectedQuestion(q);
+        App.setRoot("question_detail");
     }
 }

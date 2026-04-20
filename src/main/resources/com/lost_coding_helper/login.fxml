@@ -7,6 +7,8 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -19,10 +21,13 @@
                   <Hyperlink onAction="#backToWelcome" styleClass="link-back" text="← Back" />
                </children>
             </HBox>
-            <VBox alignment="CENTER" spacing="8.0">
+            <VBox alignment="CENTER" spacing="0.0">
                <children>
-                  <Label styleClass="title-lots" text="LOTS" />
-                  <Label styleClass="subtitle-app" text="Lord of the Strings - Coding Helper" wrapText="true" textAlignment="CENTER" />
+                  <ImageView fitWidth="280.0" pickOnBounds="true" preserveRatio="true" smooth="true" styleClass="welcome-logo">
+                     <image>
+                        <Image url="@lots_logo.png" />
+                     </image>
+                  </ImageView>
                </children>
             </VBox>
             <VBox maxWidth="280.0" spacing="20.0">

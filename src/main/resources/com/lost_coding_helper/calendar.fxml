@@ -29,6 +29,12 @@
                             </VBox.margin>
                         </Label>
 
+                        <Label fx:id="todayDateHeaderLabel" styleClass="calendar-today-header" text="Today:">
+                            <VBox.margin>
+                                <Insets top="6.0"/>
+                            </VBox.margin>
+                        </Label>
+
                         <!-- Calendar Grid (CENTERED) -->
                         <GridPane hgap="6.0" vgap="10.0" alignment="CENTER">
                             <children>

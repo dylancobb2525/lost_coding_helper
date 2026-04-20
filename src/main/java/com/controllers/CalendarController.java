@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 
 public class CalendarController {
 
+    @FXML private Label todayDateHeaderLabel;
     @FXML private Label plannerDateLabel;
     @FXML private Label warmupLabel;
     @FXML private Label warmupSubLabel;
@@ -54,11 +55,16 @@ public class CalendarController {
 
     private final List<Button> dayButtons = new ArrayList<>();
     private YearMonth currentMonth;
-    private int selectedDay = 12; // matches your mockup better
+    private int selectedDay;
 
     @FXML
     private void initialize() {
         currentMonth = YearMonth.now();
+        LocalDate today = LocalDate.now();
+        if (todayDateHeaderLabel != null) {
+            DateTimeFormatter headerFmt = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy");
+            todayDateHeaderLabel.setText("Today: " + headerFmt.format(today));
+        }
 
         dayButtons.add(day1);
         dayButtons.add(day2);
@@ -89,6 +95,9 @@ public class CalendarController {
         dayButtons.add(day27);
         dayButtons.add(day28);
 
+        int dom = today.getDayOfMonth();
+        selectedDay = Math.min(dom, dayButtons.size());
+
         setupDayButtons();
         selectDay(selectedDay);
     }
@@ -98,7 +107,7 @@ public class CalendarController {
             Button button = dayButtons.get(i);
             int dayNumber = i + 1;
 
-            button.setText("");
+            button.setText(String.valueOf(dayNumber));
             button.getStyleClass().remove("calendar-day-selected");
             button.setOnAction(e -> selectDay(dayNumber));
         }

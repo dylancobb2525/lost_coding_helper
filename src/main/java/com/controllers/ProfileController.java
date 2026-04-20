@@ -14,14 +14,14 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 public class ProfileController {
@@ -36,24 +36,39 @@ public class ProfileController {
     private Label emailValueLabel;
 
     @FXML
-    private ImageView profileImageView;
+    private StackPane profileAvatarShell;
 
-    private static final String DEFAULT_IMAGE_CLASSPATH = "/images/headshot.jpeg";
-    private static final Path DEFAULT_IMAGE_FS = Path.of("images", "headshot.jpeg");
+    @FXML
+    private SVGPath profilePlaceholderSvg;
+
+    @FXML
+    private ImageView profileImageView;
 
     @FXML
     private void initialize() {
         applyCircularProfileClip();
+        if (profilePlaceholderSvg != null) {
+            profilePlaceholderSvg.setScaleX(3.0);
+            profilePlaceholderSvg.setScaleY(3.0);
+        }
         hydrateUserInfo();
-        loadProfileImage(DEFAULT_IMAGE_CLASSPATH, DEFAULT_IMAGE_FS);
+        loadProfileImageFromUser(getCurrentUser());
     }
 
     private void applyCircularProfileClip() {
-        Circle clip = new Circle();
-        clip.centerXProperty().bind(profileImageView.fitWidthProperty().divide(2));
-        clip.centerYProperty().bind(profileImageView.fitHeightProperty().divide(2));
-        clip.radiusProperty().bind(profileImageView.fitWidthProperty().divide(2));
-        profileImageView.setClip(clip);
+        if (profileAvatarShell != null) {
+            Circle clip = new Circle();
+            clip.centerXProperty().bind(profileAvatarShell.widthProperty().divide(2));
+            clip.centerYProperty().bind(profileAvatarShell.heightProperty().divide(2));
+            clip.radiusProperty().bind(profileAvatarShell.widthProperty().divide(2));
+            profileAvatarShell.setClip(clip);
+        } else if (profileImageView != null) {
+            Circle clip = new Circle();
+            clip.centerXProperty().bind(profileImageView.fitWidthProperty().divide(2));
+            clip.centerYProperty().bind(profileImageView.fitHeightProperty().divide(2));
+            clip.radiusProperty().bind(profileImageView.fitWidthProperty().divide(2));
+            profileImageView.setClip(clip);
+        }
     }
 
     private void hydrateUserInfo() {
@@ -247,17 +262,31 @@ public class ProfileController {
         if (selected == null) {
             return;
         }
-        loadProfileImage(selected.toURI().toString(), selected.toPath());
+        User user = getCurrentUser();
+        if (user != null) {
+            user.setProfilePhotoUri(selected.toURI().toString());
+            saveUsersSilently();
+        }
+        loadProfileImageFromUser(user);
     }
 
-    private void loadProfileImage(String classpath, Path fsPath) {
-        URL fromClasspath = ProfileController.class.getResource(classpath);
-        if (fromClasspath != null) {
-            profileImageView.setImage(new Image(fromClasspath.toExternalForm(), true));
+    private void loadProfileImageFromUser(User user) {
+        if (profileImageView != null) {
+            profileImageView.setImage(null);
+        }
+        if (profilePlaceholderSvg != null) {
+            profilePlaceholderSvg.setVisible(true);
+        }
+        if (user == null || user.getProfilePhotoUri() == null || user.getProfilePhotoUri().isBlank()) {
             return;
         }
-        if (Files.exists(fsPath)) {
-            profileImageView.setImage(new Image(fsPath.toUri().toString(), true));
+        try {
+            Image img = new Image(user.getProfilePhotoUri(), true);
+            profileImageView.setImage(img);
+            if (profilePlaceholderSvg != null) {
+                profilePlaceholderSvg.setVisible(false);
+            }
+        } catch (Exception ignored) {
         }
     }
 

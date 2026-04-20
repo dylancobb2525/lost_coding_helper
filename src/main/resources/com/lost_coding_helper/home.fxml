@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -20,10 +21,13 @@
    <children>
       <VBox fx:id="welcomePane" alignment="CENTER" spacing="28.0" styleClass="welcome-stack">
          <children>
-            <VBox alignment="CENTER" spacing="8.0">
+            <VBox alignment="CENTER" spacing="0.0">
                <children>
-                  <Label styleClass="title-lots" text="LOTS" />
-                  <Label styleClass="subtitle-app" text="Lord of the Strings - Coding Helper" wrapText="true" textAlignment="CENTER" />
+                  <ImageView fitWidth="300.0" pickOnBounds="true" preserveRatio="true" smooth="true" styleClass="welcome-logo">
+                     <image>
+                        <Image url="@lots_logo.png" />
+                     </image>
+                  </ImageView>
                </children>
             </VBox>
             <VBox alignment="CENTER" spacing="16.0" maxWidth="280.0">
@@ -140,7 +144,7 @@
                                     <Label fx:id="randomProblemMeta" styleClass="card-meta" text="Easy · Java" />
                                     <Label fx:id="randomSnippetLabel" styleClass="card-snippet card-snippet-fixed" text="Tap Open to jump in." wrapText="true" />
                                     <Region styleClass="card-spacer" VBox.vgrow="ALWAYS" />
-                                    <Button maxWidth="Infinity" mnemonicParsing="false" text="Open">
+                                    <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#openRandomProblem" text="Open">
                                        <styleClass>
                                           <String fx:value="button-pill-primary" />
                                           <String fx:value="button-small" />
@@ -158,7 +162,7 @@
                                     <Label fx:id="studyPlanMeta" styleClass="card-meta" text="Easy · Java" />
                                     <Label fx:id="studySnippetLabel" styleClass="card-snippet card-snippet-fixed" text="From your Java study plan." wrapText="true" />
                                     <Region styleClass="card-spacer" VBox.vgrow="ALWAYS" />
-                                    <Button maxWidth="Infinity" mnemonicParsing="false" text="Open">
+                                    <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#openStudyPlanProblem" text="Open">
                                        <styleClass>
                                           <String fx:value="button-pill-primary" />
                                           <String fx:value="button-small" />

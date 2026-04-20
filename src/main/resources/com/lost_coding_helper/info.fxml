@@ -13,10 +13,11 @@
    <children>
       <VBox spacing="0.0">
          <children>
-            <VBox spacing="10.0">
+            <VBox spacing="14.0">
                <children>
                   <Label styleClass="title-section" text="Information" />
-                  <Label styleClass="hint-muted" text="About LOTS and how to use the app — content coming soon." wrapText="true" />
+                  <Label styleClass="card-meta" text="CSCE 247-002" />
+                  <Label styleClass="question-prompt" text="Dylan Cobb, Chris Feuchter, Blake Franks, Tyler Bouldin, Alex Marinov" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="18.0" left="22.0" right="22.0" top="22.0" />

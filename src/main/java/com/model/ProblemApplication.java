@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +59,28 @@ public class ProblemApplication {
         User user = userList.authenticate(username, password);
         if (user != null) {
             this.currentUser = user;
+            refreshStreakIfStale(user);
         }
         return user;
+    }
+
+    /**
+     * If the user did not solve anything yesterday or today, the daily streak is no longer active.
+     */
+    private void refreshStreakIfStale(User user) {
+        if (user == null || user.getProgressTracker() == null) {
+            return;
+        }
+        LocalDate last = user.getProgressTracker().getLastActiveDate();
+        if (last == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        if (last.isBefore(today.minusDays(1))) {
+            user.getProgressTracker().setStreak(0);
+            user.getProgressTracker().setLastActiveDate(null);
+            dataWriter.saveUsers(userList.getAll());
+        }
     }
 
     /**
@@ -138,6 +159,7 @@ public class ProblemApplication {
         Question question = questionList.getById(questionId);
         if (question != null) {
             question.addSolution(solution);
+            dataWriter.saveProblem(questionList.getAll());
         }
     }
 
@@ -170,7 +192,27 @@ public class ProblemApplication {
         Question question = questionList.getById(questionId);
         if (question != null) {
             currentUser.getProgressTracker().markCompleted(question, timeSpentSec);
+            dataWriter.saveUsers(userList.getAll());
         }
+    }
+
+    /**
+     * Saves users.json (progress, streak, favorites) after a change.
+     */
+    public void saveUsersToDisk() {
+        dataWriter.saveUsers(userList.getAll());
+    }
+
+    /**
+     * Toggles favorite for the current user and saves. Returns whether the question is favorited after the toggle.
+     */
+    public boolean toggleFavoriteForCurrentUser(Question question) {
+        if (currentUser == null || question == null) {
+            return false;
+        }
+        boolean favorited = currentUser.toggleFavoriteProblem(question);
+        dataWriter.saveUsers(userList.getAll());
+        return favorited;
     }
 
     /**
@@ -188,10 +230,12 @@ public class ProblemApplication {
      */
     public void init() {
         userList.load();
+        questionList.getAll().clear();
         ArrayList<Question> questions = dataLoader.getProblems();
         if (questions != null) {
             questionList.getAll().addAll(questions);
         }
+        userList.hydrateQuestionReferences(questionList);
     }
 
     /**

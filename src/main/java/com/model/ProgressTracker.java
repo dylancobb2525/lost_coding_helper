@@ -84,7 +84,7 @@ public class ProgressTracker {
         if (problem == null) {
             return;
         }
-        boolean newlyCompleted = !completedProblems.contains(problem);
+        boolean newlyCompleted = !hasCompletedId(problem);
         if (newlyCompleted) {
             completedProblems.add(problem);
             bumpCompletionsToday();
@@ -111,6 +111,30 @@ public class ProgressTracker {
             return 0;
         }
         return completionsToday;
+    }
+
+    /** Calendar day that {@link #getCompletionsTodayRaw()} refers to; may be null. */
+    public LocalDate getCompletionsDay() {
+        return completionsDay;
+    }
+
+    /** Stored count for {@link #completionsDay} (use with day check). */
+    public int getCompletionsTodayRaw() {
+        return completionsToday;
+    }
+
+    /**
+     * Restores today's completion count from JSON. Ignores stale days.
+     */
+    public void restoreCompletionsForDay(LocalDate day, int count) {
+        LocalDate today = LocalDate.now();
+        if (day != null && day.equals(today) && count >= 0) {
+            this.completionsDay = day;
+            this.completionsToday = count;
+        } else {
+            this.completionsDay = null;
+            this.completionsToday = 0;
+        }
     }
 
     /**
@@ -167,5 +191,32 @@ public class ProgressTracker {
     /** Logs a generic activity entry. */
     public void addActivity() {
         logActivity(ActivityType.OTHER, "User activity recorded");
+    }
+
+    private boolean hasCompletedId(Question problem) {
+        if (problem == null || problem.getId() == null) {
+            return false;
+        }
+        for (Question p : completedProblems) {
+            if (p != null && problem.getId().equals(p.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Replaces the in-memory completed list (used when loading from JSON).
+     */
+    public void replaceCompletedList(List<Question> questions) {
+        completedProblems.clear();
+        if (questions == null) {
+            return;
+        }
+        for (Question q : questions) {
+            if (q != null) {
+                completedProblems.add(q);
+            }
+        }
     }
 }

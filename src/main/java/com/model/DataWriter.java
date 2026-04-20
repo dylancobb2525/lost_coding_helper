@@ -3,6 +3,7 @@ package com.model;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -197,6 +198,7 @@ public class DataWriter extends DataConstants {
         obj.put(USER_ACHIEVEMENT_IDS, achievementIds);
         obj.put(USER_STREAK, u.getStreak());
         obj.put(USER_LAST_ACTIVE_DATE, u.getLastActiveDate() != null ? u.getLastActiveDate().toString() : null);
+        putCompletionsToday(obj, u);
         JSONArray favoriteIds = new JSONArray();
         if (u.getFavoriteProblems() != null) {
             for (Question q : u.getFavoriteProblems()) {
@@ -204,8 +206,37 @@ public class DataWriter extends DataConstants {
             }
         }
         obj.put(USER_FAVORITE_PROBLEMS, favoriteIds);
+        JSONArray completedIds = new JSONArray();
+        if (u.getProgressTracker() != null) {
+            for (Question q : u.getProgressTracker().getCompletedQuestionsByDifficulty()) {
+                if (q != null && q.getId() != null) {
+                    completedIds.add(q.getId().toString());
+                }
+            }
+        }
+        obj.put(USER_COMPLETED_PROBLEMS, completedIds);
+        obj.put(USER_PROFILE_PHOTO_URI, u.getProfilePhotoUri());
         obj.put(USER_PROGRESS_TRACKER_ID, u.getProgressTrackerId() != null ? u.getProgressTrackerId().toString() : null);
         return obj;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void putCompletionsToday(JSONObject obj, User u) {
+        if (u.getProgressTracker() == null) {
+            obj.put(USER_COMPLETIONS_DAY, null);
+            obj.put(USER_COMPLETIONS_TODAY, 0);
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        ProgressTracker pt = u.getProgressTracker();
+        LocalDate cd = pt.getCompletionsDay();
+        if (cd != null && cd.equals(today)) {
+            obj.put(USER_COMPLETIONS_DAY, cd.toString());
+            obj.put(USER_COMPLETIONS_TODAY, pt.getCompletionsTodayRaw());
+        } else {
+            obj.put(USER_COMPLETIONS_DAY, null);
+            obj.put(USER_COMPLETIONS_TODAY, 0);
+        }
     }
 
     /**

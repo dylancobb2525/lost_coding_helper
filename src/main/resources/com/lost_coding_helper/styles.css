@@ -17,6 +17,10 @@
     -fx-font-weight: bold;
 }
 
+.welcome-logo {
+    -fx-max-width: 300px;
+}
+
 .subtitle-app {
     -fx-text-fill: #4a3737;
     -fx-font-size: 13px;
@@ -439,6 +443,10 @@
     -fx-fill: rgba(224, 132, 132, 0.95);
 }
 
+.favorites-star-clickable {
+    -fx-cursor: hand;
+}
+
 .favorites-label {
     -fx-text-fill: #4a3737;
     -fx-font-size: 13px;
@@ -657,6 +665,25 @@
     -fx-pref-height: 88px;
     -fx-max-width: 88px;
     -fx-max-height: 88px;
+}
+
+/* Outer ring so the border is not clipped by the circular mask on the inner shell */
+.profile-avatar-outer-ring {
+    -fx-min-width: 94px;
+    -fx-min-height: 94px;
+    -fx-pref-width: 94px;
+    -fx-pref-height: 94px;
+    -fx-max-width: 94px;
+    -fx-max-height: 94px;
+    -fx-border-color: #141414;
+    -fx-border-width: 2.5px;
+    -fx-border-radius: 999px;
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+}
+
+.profile-avatar-placeholder-icon {
+    -fx-fill: #141414;
 }
 
 .profile-label {
@@ -983,9 +1010,18 @@
     -fx-text-fill: #4a3737;
 }
 
+.calendar-today-header {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #7a5a5a;
+}
+
 .calendar-day {
     -fx-pref-width: 39;
     -fx-pref-height: 39;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4a3737;
 
     -fx-background-color: #febdbd;
     -fx-border-color: rgba(74, 55, 55, 0.65);

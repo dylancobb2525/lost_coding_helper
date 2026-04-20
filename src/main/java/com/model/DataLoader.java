@@ -1,6 +1,7 @@
 package com.model;
 
 import java.io.FileReader;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,6 +46,57 @@ public class DataLoader extends DataConstants {
                 String hashedPassword = (String) userJSON.get(USER_HASHED_PASSWORD);
                 String accountId = (String) userJSON.get(USER_ACCOUNT_ID);
                 User user = new Contributor(userId, displayName, accountId, email, username, hashedPassword);
+
+                JSONArray achievementJson = getJSONArray(userJSON, USER_ACHIEVEMENT_IDS);
+                if (achievementJson != null) {
+                    user.getAchievementIds().clear();
+                    for (Object o : achievementJson) {
+                        UUID aid = parseUUID(o != null ? o.toString() : null);
+                        if (aid != null) {
+                            user.getAchievementIds().add(aid);
+                        }
+                    }
+                }
+
+                int streak = parseIntValue(userJSON.get(USER_STREAK));
+                user.getProgressTracker().setStreak(Math.max(0, streak));
+                Object lastActiveRaw = userJSON.get(USER_LAST_ACTIVE_DATE);
+                user.getProgressTracker().setLastActiveDate(parseLocalDate(lastActiveRaw != null ? lastActiveRaw.toString() : null));
+
+                Object compDayRaw = userJSON.get(USER_COMPLETIONS_DAY);
+                int compToday = parseIntValue(userJSON.get(USER_COMPLETIONS_TODAY));
+                user.getProgressTracker().restoreCompletionsForDay(
+                        parseLocalDate(compDayRaw != null ? compDayRaw.toString() : null),
+                        compToday);
+
+                Object photoRaw = userJSON.get(USER_PROFILE_PHOTO_URI);
+                if (photoRaw != null && !photoRaw.toString().isBlank()) {
+                    user.setProfilePhotoUri(photoRaw.toString().trim());
+                }
+
+                user.getFavoritedProblemIds().clear();
+                user.getFavoriteProblems().clear();
+                JSONArray favJson = getJSONArray(userJSON, USER_FAVORITE_PROBLEMS);
+                if (favJson != null) {
+                    for (Object o : favJson) {
+                        UUID qid = parseUUID(o != null ? o.toString() : null);
+                        if (qid != null) {
+                            user.getFavoritedProblemIds().add(qid);
+                        }
+                    }
+                }
+
+                user.getPendingCompletedProblemIds().clear();
+                JSONArray completedJson = getJSONArray(userJSON, USER_COMPLETED_PROBLEMS);
+                if (completedJson != null) {
+                    for (Object o : completedJson) {
+                        UUID qid = parseUUID(o != null ? o.toString() : null);
+                        if (qid != null) {
+                            user.getPendingCompletedProblemIds().add(qid);
+                        }
+                    }
+                }
+
                 users.add(user);
             }
         } catch (Exception e) {
@@ -153,6 +205,36 @@ public class DataLoader extends DataConstants {
             return LocalDateTime.parse(s.replace("Z", ""), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private static LocalDate parseLocalDate(String s) {
+        if (s == null || s.isBlank()) {
+            return null;
+        }
+        String t = s.trim();
+        int tIdx = t.indexOf('T');
+        if (tIdx > 0) {
+            t = t.substring(0, tIdx);
+        }
+        try {
+            return LocalDate.parse(t);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static int parseIntValue(Object raw) {
+        if (raw == null) {
+            return 0;
+        }
+        if (raw instanceof Number) {
+            return ((Number) raw).intValue();
+        }
+        try {
+            return Integer.parseInt(raw.toString().trim());
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 

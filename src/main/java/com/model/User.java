@@ -28,6 +28,11 @@ public abstract class User {
     private ProgressTracker progressTracker;
     private UUID progressTrackerId;
 
+    /** Filled from JSON before questions load; used to rebuild {@link ProgressTracker} lists. */
+    private ArrayList<UUID> pendingCompletedProblemIds;
+    /** Optional saved profile image URI; null means use placeholder in the UI. */
+    private String profilePhotoUri;
+
     private static final int MAX_FAILED_LOGINS = 5;
 
     public User(UUID userId, String displayName, String accountId, String email, String username, String hashedPassword) {
@@ -47,6 +52,8 @@ public abstract class User {
         this.favoriteProblems = new ArrayList<>();
         this.progressTracker = new ProgressTracker();
         this.progressTrackerId = this.userId;
+        this.pendingCompletedProblemIds = new ArrayList<>();
+        this.profilePhotoUri = null;
     }
 
     public UUID getUserId() {
@@ -157,6 +164,55 @@ public abstract class User {
 
     public ProgressTracker getProgressTracker() {
         return progressTracker;
+    }
+
+    public ArrayList<UUID> getPendingCompletedProblemIds() {
+        return pendingCompletedProblemIds;
+    }
+
+    public String getProfilePhotoUri() {
+        return profilePhotoUri;
+    }
+
+    public void setProfilePhotoUri(String uri) {
+        this.profilePhotoUri = (uri != null && !uri.isBlank()) ? uri.trim() : null;
+    }
+
+    /**
+     * Adds or removes a favorite by question id; keeps id list in sync.
+     *
+     * @return true if the question is now favorited, false if it was removed
+     */
+    public boolean toggleFavoriteProblem(Question q) {
+        if (!canFavoriteProblems() || q == null || q.getId() == null) {
+            return false;
+        }
+        UUID id = q.getId();
+        for (int i = 0; i < favoriteProblems.size(); i++) {
+            Question existing = favoriteProblems.get(i);
+            if (existing != null && id.equals(existing.getId())) {
+                favoriteProblems.remove(i);
+                favoritedProblems.remove(id);
+                return false;
+            }
+        }
+        favoriteProblems.add(q);
+        if (!favoritedProblems.contains(id)) {
+            favoritedProblems.add(id);
+        }
+        return true;
+    }
+
+    public boolean isFavoriteProblem(Question q) {
+        if (q == null || q.getId() == null) {
+            return false;
+        }
+        for (Question p : favoriteProblems) {
+            if (p != null && q.getId().equals(p.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
