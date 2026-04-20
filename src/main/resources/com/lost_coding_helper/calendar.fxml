@@ -2,7 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -18,9 +20,11 @@
         <VBox spacing="0.0">
             <children>
 
-                <!-- Main Content -->
-                <VBox spacing="22.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-                    <children>
+                <!-- Main Content (scrollable; keeps bottom nav fixed) -->
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="home-scroll" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox spacing="22.0" alignment="TOP_CENTER">
+                            <children>
 
                         <!-- Title -->
                         <Label text="Study Planner" styleClass="calendar-title">
@@ -79,43 +83,55 @@
                         </GridPane>
 
                         <!-- Planner Card (CENTERED UNDER GRID) -->
-                        <VBox styleClass="planner-card" spacing="18.0" alignment="CENTER_LEFT">
+                        <VBox styleClass="planner-card" spacing="14.0" alignment="CENTER_LEFT">
                             <children>
 
                                 <Label fx:id="plannerDateLabel"
                                        text="Wed • Mar 26 — tap a day"
                                        styleClass="planner-date-label"/>
 
-                                <VBox spacing="4.0">
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
                                     <children>
-                                        <Label fx:id="warmupLabel"
-                                               text="Warm-up · 10 min"
-                                               styleClass="planner-main-line"/>
-                                        <Label fx:id="warmupSubLabel"
-                                               text="Two Sum, Valid Parentheses"
-                                               styleClass="planner-sub-line"/>
+                                        <Label prefWidth="72.0" styleClass="field-label" text="Language" />
+                                        <ComboBox fx:id="studyLanguageCombo" maxWidth="Infinity" styleClass="question-language-combo" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <children>
+                                        <Label prefWidth="72.0" styleClass="field-label" text="Focus" />
+                                        <ComboBox fx:id="studyTopicCombo" maxWidth="Infinity" styleClass="question-language-combo" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <children>
+                                        <Label prefWidth="72.0" styleClass="field-label" text="Level" />
+                                        <ComboBox fx:id="studyLevelCombo" maxWidth="Infinity" styleClass="question-language-combo" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label fx:id="warmupLabel" styleClass="planner-main-line" text="Warm-up" />
+                                        <Label fx:id="warmupSummaryLabel" styleClass="planner-sub-line" wrapText="true" />
+                                        <VBox fx:id="warmupLinksVBox" spacing="6.0" />
                                     </children>
                                 </VBox>
 
-                                <VBox spacing="4.0">
+                                <VBox spacing="6.0">
                                     <children>
-                                        <Label fx:id="coreLabel"
-                                               text="Core · 25 min"
-                                               styleClass="planner-main-line"/>
-                                        <Label fx:id="coreSubLabel"
-                                               text="Longest subarray, BST check"
-                                               styleClass="planner-sub-line"/>
+                                        <Label fx:id="coreLabel" styleClass="planner-main-line" text="Core" />
+                                        <Label fx:id="coreSummaryLabel" styleClass="planner-sub-line" wrapText="true" />
+                                        <VBox fx:id="coreLinksVBox" spacing="6.0" />
                                     </children>
                                 </VBox>
 
-                                <VBox spacing="4.0">
+                                <VBox spacing="6.0">
                                     <children>
-                                        <Label fx:id="stretchLabel"
-                                               text="Stretch · 20 min"
-                                               styleClass="planner-main-line"/>
-                                        <Label fx:id="stretchSubLabel"
-                                               text="Hard graph (optional)"
-                                               styleClass="planner-sub-line"/>
+                                        <Label fx:id="stretchLabel" styleClass="planner-main-line" text="Stretch" />
+                                        <Label fx:id="stretchSummaryLabel" styleClass="planner-sub-line" wrapText="true" />
+                                        <VBox fx:id="stretchLinksVBox" spacing="6.0" />
                                     </children>
                                 </VBox>
 
@@ -130,8 +146,13 @@
                             </VBox.margin>
                         </VBox>
 
-                    </children>
-                </VBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="24.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </ScrollPane>
 
                 <!-- Bottom Navigation -->
                 <HBox alignment="CENTER" spacing="18.0" styleClass="nav-bar">

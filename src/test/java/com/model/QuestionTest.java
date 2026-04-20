@@ -69,9 +69,10 @@ public class QuestionTest {
      */
     public void addComment_withValidComment_addsToCommentsList() {
         String comment = "This is a valid comment";
-        question.addComment(comment);
+        UUID qid = UUID.randomUUID();
+        question.addComment(new Comment(UUID.randomUUID(), comment, qid, null));
         assertEquals(1, question.getComments().size());
-        assertEquals(comment, question.getComments().get(0));
+        assertEquals(comment, question.getComments().get(0).getBody());
     }
 
     @Test
@@ -164,7 +165,7 @@ public class QuestionTest {
      * | on question with data | check if it works when there is data |
      */
     public void deleteQuestion_onPopulatedQuestion_returnsTrue() {
-        question.addComment("c");
+        question.addComment(new Comment(UUID.randomUUID(), "c", UUID.randomUUID(), null));
         question.addAttachment("a.txt");
         assertTrue(question.deleteQuestion());
     }

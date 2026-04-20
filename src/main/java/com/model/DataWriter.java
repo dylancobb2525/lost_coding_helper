@@ -277,8 +277,30 @@ public class DataWriter extends DataConstants {
             }
         }
         obj.put(QUESTION_SOLUTIONS, solutions);
-        obj.put(QUESTION_COMMENTS, new JSONArray());
+        JSONArray commentsOut = new JSONArray();
+        if (q.getComments() != null) {
+            for (Comment c : q.getComments()) {
+                if (c != null) {
+                    commentsOut.add(commentToJson(c));
+                }
+            }
+        }
+        obj.put(QUESTION_COMMENTS, commentsOut);
         obj.put(QUESTION_ATTACHMENTS, new JSONArray());
+        return obj;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static JSONObject commentToJson(Comment c) {
+        JSONObject obj = new JSONObject();
+        obj.put(COMMENT_ID, c.getId() != null ? c.getId().toString() : null);
+        obj.put(COMMENT_AUTHOR_ID, c.getAuthorId() != null ? c.getAuthorId().toString() : null);
+        obj.put(COMMENT_AUTHOR_DISPLAY_NAME, c.getAuthorDisplayName());
+        obj.put(COMMENT_BODY, c.getBody());
+        obj.put(COMMENT_CREATED_ON, c.getCreatedOn() != null ? c.getCreatedOn().toString() : null);
+        obj.put(COMMENT_UPDATED_AT, c.getUpdatedAt() != null ? c.getUpdatedAt().toString() : null);
+        obj.put(COMMENT_QUESTION_ID, c.getQuestionId() != null ? c.getQuestionId().toString() : null);
+        obj.put(COMMENT_SOLUTION_ID, c.getSolutionId() != null ? c.getSolutionId().toString() : null);
         return obj;
     }
 

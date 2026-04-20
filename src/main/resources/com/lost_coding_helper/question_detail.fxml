@@ -6,7 +6,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
@@ -15,34 +17,94 @@
    <children>
       <VBox spacing="0.0">
          <children>
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="home-scroll" VBox.vgrow="ALWAYS">
-               <content>
-                  <VBox spacing="14.0" styleClass="question-tab-root">
+            <BorderPane VBox.vgrow="ALWAYS">
+               <center>
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="home-scroll" BorderPane.alignment="CENTER">
+                     <content>
+                        <VBox spacing="14.0" styleClass="question-tab-root">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#backToQuestions" styleClass="button-pill-outline button-small" text="← Back to questions" />
+                              <Label fx:id="questionTitleLabel" styleClass="title-section" text="Question" wrapText="true" />
+                              <Label fx:id="questionMetaLabel" styleClass="card-meta" text="Difficulty: Easy" />
+                              <Label fx:id="questionTopicsLabel" styleClass="hint-muted" text="Topics: None" wrapText="true" />
+                              <Label fx:id="questionCompaniesLabel" styleClass="hint-muted" text="Companies: None" wrapText="true" />
+                              <Label text="Prompt" styleClass="section-title" />
+                              <Label fx:id="questionPromptLabel" styleClass="question-prompt" text="Prompt text" wrapText="true" />
+                              <Label text="Your solution" styleClass="section-title" />
+                              <Label styleClass="field-label" text="Language" />
+                              <ComboBox fx:id="languageCombo" maxWidth="Infinity" styleClass="question-language-combo" />
+                              <TextArea fx:id="solutionCodeArea" prefRowCount="9" promptText="Write your solution here…" styleClass="question-editor" wrapText="true" />
+                              <Button mnemonicParsing="false" onAction="#saveMySolution" styleClass="button-pill-outline" text="Save my solution" />
+                              <Button fx:id="favoriteButton" mnemonicParsing="false" onAction="#toggleFavorite" styleClass="button-pill-outline" text="Add to favorites" />
+                              <Button mnemonicParsing="false" onAction="#markComplete" styleClass="button-pill-primary" text="Mark complete" />
+                              <Label fx:id="completionStatusLabel" managed="false" styleClass="hint-muted" text="" visible="false" wrapText="true" />
+                              <VBox spacing="12.0" styleClass="official-solution-spoiler">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                       <children>
+                                          <Label styleClass="official-solution-heading" text="Official solution" wrapText="false" />
+                                          <Region prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="toggleOfficialSolutionButton" mnemonicParsing="false" onAction="#toggleOfficialSolutionReveal" styleClass="button-pill-outline button-small" text="Show ▼" />
+                                       </children>
+                                    </HBox>
+                                    <VBox fx:id="officialSolutionsRevealPanel" managed="false" spacing="10.0" visible="false">
+                                       <children>
+                                          <VBox fx:id="providedSolutionsContainer" spacing="10.0" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="22.0" right="22.0" top="22.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
+               </center>
+               <bottom>
+                  <VBox fx:id="commentsDockRoot" spacing="0.0" styleClass="question-comments-dock">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#backToQuestions" styleClass="button-pill-outline button-small" text="← Back to questions" />
-                        <Label fx:id="questionTitleLabel" styleClass="title-section" text="Question" wrapText="true" />
-                        <Label fx:id="questionMetaLabel" styleClass="card-meta" text="Difficulty: Easy" />
-                        <Label fx:id="questionTopicsLabel" styleClass="hint-muted" text="Topics: None" wrapText="true" />
-                        <Label fx:id="questionCompaniesLabel" styleClass="hint-muted" text="Companies: None" wrapText="true" />
-                        <Label text="Prompt" styleClass="section-title" />
-                        <Label fx:id="questionPromptLabel" styleClass="question-prompt" text="Prompt text" wrapText="true" />
-                        <Label text="Official solution (for this question)" styleClass="section-title" />
-                        <VBox fx:id="providedSolutionsContainer" spacing="10.0" />
-                        <Label text="Your solution" styleClass="section-title" />
-                        <Label styleClass="field-label" text="Language" />
-                        <ComboBox fx:id="languageCombo" maxWidth="Infinity" styleClass="question-language-combo" />
-                        <TextArea fx:id="solutionCodeArea" prefRowCount="9" promptText="Write your solution here…" styleClass="question-editor" wrapText="true" />
-                        <Button mnemonicParsing="false" onAction="#saveMySolution" styleClass="button-pill-outline" text="Save my solution" />
-                        <Button fx:id="favoriteButton" mnemonicParsing="false" onAction="#toggleFavorite" styleClass="button-pill-outline" text="Add to favorites" />
-                        <Button mnemonicParsing="false" onAction="#markComplete" styleClass="button-pill-primary" text="Mark complete" />
-                        <Label fx:id="completionStatusLabel" styleClass="hint-muted" text="Read the official solution, work on yours, then mark complete when ready." wrapText="true" />
+                        <HBox fx:id="commentsCollapsedStrip" alignment="CENTER_LEFT" spacing="12.0" styleClass="comments-collapsed-strip">
+                           <children>
+                              <Label fx:id="commentsCollapsedTitle" styleClass="section-title" text="Comments" />
+                              <Label fx:id="commentsCollapsedCount" styleClass="hint-muted" text="" wrapText="false" />
+                              <Region prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="expandCommentsButton" mnemonicParsing="false" onAction="#expandCommentsDock" styleClass="button-pill-outline button-small" text="Show ▲" />
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="22.0" right="22.0" top="10.0" />
+                           </padding>
+                        </HBox>
+                        <VBox fx:id="commentsExpandedPanel" managed="false" spacing="10.0" styleClass="question-comments-expanded" visible="false">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                 <children>
+                                    <Label styleClass="section-title" text="Comments" />
+                                    <Region prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="collapseCommentsButton" mnemonicParsing="false" onAction="#collapseCommentsDock" styleClass="button-pill-outline button-small" text="Hide ▼" />
+                                 </children>
+                              </HBox>
+                              <ScrollPane fx:id="commentsScrollPane" fitToWidth="true" hbarPolicy="NEVER" minHeight="80.0" prefViewportHeight="160.0" styleClass="home-scroll" VBox.vgrow="ALWAYS">
+                                 <content>
+                                    <VBox fx:id="commentsListContainer" spacing="8.0">
+                                       <padding>
+                                          <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                                       </padding>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
+                              <TextArea fx:id="commentInputArea" prefRowCount="3" promptText="Write a comment…" styleClass="question-editor" wrapText="true" />
+                              <Button fx:id="postCommentButton" mnemonicParsing="false" onAction="#postQuestionComment" styleClass="button-pill-outline" text="Post comment" />
+                           </children>
+                           <padding>
+                              <Insets bottom="14.0" left="22.0" right="22.0" top="10.0" />
+                           </padding>
+                        </VBox>
                      </children>
-                     <padding>
-                        <Insets bottom="20.0" left="22.0" right="22.0" top="22.0" />
-                     </padding>
                   </VBox>
-               </content>
-            </ScrollPane>
+               </bottom>
+            </BorderPane>
             <HBox alignment="CENTER" spacing="18.0" styleClass="nav-bar">
                <children>
                   <Button mnemonicParsing="false" onAction="#navLeaderboard" styleClass="nav-icon">

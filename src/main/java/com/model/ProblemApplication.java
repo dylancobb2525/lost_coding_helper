@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.model.enums.Topic;
+
 /**
  * Application facade: the UI and driver use this class instead of {@link UserList}, {@link QuestionList}, or JSON directly.
  *
@@ -164,6 +166,48 @@ public class ProblemApplication {
     }
 
     /**
+     * Adds a comment on the given question for the current user and saves {@code questions.json}.
+     * Guests cannot post (same gate as saving a solution).
+     *
+     * @return {@code true} if saved
+     */
+    public boolean addQuestionComment(UUID questionId, String body) {
+        if (currentUser == null || questionId == null || body == null) {
+            return false;
+        }
+        String trimmed = body.trim();
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+        if (!currentUser.canSubmitSolutions()) {
+            return false;
+        }
+        Question question = questionList.getById(questionId);
+        if (question == null) {
+            return false;
+        }
+        Comment comment = new Comment(currentUser.getUserId(), trimmed, questionId, null);
+        comment.setAuthorDisplayName(displayNameForComment(currentUser));
+        question.addComment(comment);
+        return dataWriter.saveProblem(questionList.getAll());
+    }
+
+    private static String displayNameForComment(User user) {
+        if (user == null) {
+            return "User";
+        }
+        String d = user.getDisplayName();
+        if (d != null && !d.isBlank()) {
+            return d.trim();
+        }
+        String u = user.getUsername();
+        if (u != null && !u.isBlank()) {
+            return u.trim();
+        }
+        return "User";
+    }
+
+    /**
      * Records an attempt for the logged-in user. No-op if not logged in.
      *
      * @param questionId question id
@@ -250,18 +294,27 @@ public class ProblemApplication {
     }
 
     /**
-     * Builds a study plan for the given language and level. Levels {@code 1}–{@code 3} are beginner–advanced; all map to the
-     * project's easy difficulty for now.
-     *
-     * @param language e.g. {@code "Java"}, {@code "C++"}
-     * @param level 1 = beginner, 2 = intermediate, 3 = advanced
-     * @return generated plan
+     * Today's personalized plan for the logged-in user (completed problems skipped; lineup changes daily).
      */
     public LearningPlan createStudyPlan(String language, int level) {
+        return createDailyStudyPlan(LocalDate.now(), language, level, null);
+    }
+
+    /**
+     * Study lineup for {@code planDate}: excludes finished problems when logged in; stable per user + date;
+     * optional topic filter narrows candidates (widened automatically if empty).
+     */
+    public LearningPlan createDailyStudyPlan(LocalDate planDate, String language, int level, Topic topicFocus) {
         if (studyPlanner == null) {
             studyPlanner = new StudyPlanner(questionList);
         }
-        return studyPlanner.generatePlan(language, level);
+        UUID salt = UUID.fromString("00000000-0000-4000-8000-000000000001");
+        ArrayList<UUID> completed = new ArrayList<>();
+        if (currentUser != null && currentUser.getProgressTracker() != null) {
+            salt = currentUser.getUserId();
+            completed.addAll(currentUser.getProgressTracker().getCompletedQuestionIds());
+        }
+        return studyPlanner.generateDailyPersonalizedPlan(planDate, salt, language, level, topicFocus, completed);
     }
 
     /**

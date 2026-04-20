@@ -180,7 +180,7 @@ public class QuestionListTest {
      */
     public void search_nullTitle_skipped() {
         Question noTitle = new Question();
-        noTitle.addComment("only");
+        noTitle.addComment(new Comment(UUID.randomUUID(), "only", UUID.randomUUID(), null));
         list.addQuestion(noTitle);
         assertTrue(list.search("anything").isEmpty());
     }
@@ -222,7 +222,7 @@ public class QuestionListTest {
         assertFalse(list.updateQuestion(null));
 
         Question noId = new Question();
-        noId.addComment("no id");
+        noId.addComment(new Comment(UUID.randomUUID(), "no id", UUID.randomUUID(), null));
         assertFalse(list.updateQuestion(noId));
 
         list.setDataWriter(null);

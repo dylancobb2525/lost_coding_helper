@@ -24,7 +24,7 @@ public class Question {
     private String status;
     private int voteCount;
     private ArrayList<Solution> solutions;
-    private ArrayList<String> comments;
+    private ArrayList<Comment> comments;
     private ArrayList<String> attachments;
 
     /**
@@ -74,18 +74,18 @@ public class Question {
     }
 
     /**
-     * Adds a comment string to this question (stored in a simple list).
+     * Adds a structured comment on this question (not tied to a solution).
      */
-    public void addComment(String comment) {
+    public void addComment(Comment comment) {
         if (comment != null) {
             comments.add(comment);
         }
     }
 
     /**
-     * @return the list of comment strings on this question
+     * @return comments left on this question
      */
-    public ArrayList<String> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
@@ -121,6 +121,7 @@ public class Question {
         this.hints = updatedQuestion.getHints() != null ? new ArrayList<>(updatedQuestion.getHints()) : new ArrayList<>();
         this.status = updatedQuestion.getStatus();
         this.link = updatedQuestion.getLink();
+        this.comments = updatedQuestion.getComments() != null ? new ArrayList<>(updatedQuestion.getComments()) : new ArrayList<>();
         return true;
     }
 

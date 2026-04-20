@@ -6,23 +6,42 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.lost_coding_helper.App;
+import com.model.LearningPlan;
+import com.model.PlannerStep;
+import com.model.ProblemApplication;
+import com.model.Question;
+import com.model.enums.Topic;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
 public class CalendarController {
 
     @FXML private Label todayDateHeaderLabel;
     @FXML private Label plannerDateLabel;
+
+    @FXML private ComboBox<String> studyLanguageCombo;
+    @FXML private ComboBox<String> studyTopicCombo;
+    @FXML private ComboBox<String> studyLevelCombo;
+
     @FXML private Label warmupLabel;
-    @FXML private Label warmupSubLabel;
+    @FXML private Label warmupSummaryLabel;
+    @FXML private VBox warmupLinksVBox;
+
     @FXML private Label coreLabel;
-    @FXML private Label coreSubLabel;
+    @FXML private Label coreSummaryLabel;
+    @FXML private VBox coreLinksVBox;
+
     @FXML private Label stretchLabel;
-    @FXML private Label stretchSubLabel;
+    @FXML private Label stretchSummaryLabel;
+    @FXML private VBox stretchLinksVBox;
 
     @FXML private Button day1;
     @FXML private Button day2;
@@ -95,11 +114,36 @@ public class CalendarController {
         dayButtons.add(day27);
         dayButtons.add(day28);
 
+        initStudyPreferenceCombos();
+
         int dom = today.getDayOfMonth();
         selectedDay = Math.min(dom, dayButtons.size());
 
         setupDayButtons();
         selectDay(selectedDay);
+    }
+
+    private void initStudyPreferenceCombos() {
+        if (studyLanguageCombo != null) {
+            studyLanguageCombo.getItems().setAll("Java", "C++", "Python");
+            studyLanguageCombo.getSelectionModel().select("Java");
+            studyLanguageCombo.setOnAction(e -> updatePlanner(selectedDay));
+        }
+        if (studyTopicCombo != null) {
+            studyTopicCombo.getItems().setAll(
+                    "Any topic",
+                    "Algorithms & data structures",
+                    "Database",
+                    "Object-oriented programming"
+            );
+            studyTopicCombo.getSelectionModel().selectFirst();
+            studyTopicCombo.setOnAction(e -> updatePlanner(selectedDay));
+        }
+        if (studyLevelCombo != null) {
+            studyLevelCombo.getItems().setAll("Beginner", "Intermediate", "Advanced");
+            studyLevelCombo.getSelectionModel().select(1);
+            studyLevelCombo.setOnAction(e -> updatePlanner(selectedDay));
+        }
     }
 
     private void setupDayButtons() {
@@ -132,53 +176,172 @@ public class CalendarController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE \u2022 MMM d");
 
         if (plannerDateLabel != null) {
-            plannerDateLabel.setText(formatter.format(date) + " \u2014 tap a day");
+            plannerDateLabel.setText(formatter.format(date) + " \u2014 lineup for this day");
         }
 
-        int mod = day % 4;
+        ProblemApplication app = App.getApplication();
+        if (app == null) {
+            clearPlannerUi("Open the app with data loaded to see your plan.");
+            return;
+        }
 
-        switch (mod) {
-            case 0 -> {
-                warmupLabel.setText("Warm-up \u00b7 10 min");
-                warmupSubLabel.setText("Two Sum, Valid Parentheses");
+        String language = selectedLanguage();
+        int level = selectedLevel();
+        Topic focus = selectedTopic();
 
-                coreLabel.setText("Core \u00b7 25 min");
-                coreSubLabel.setText("Longest subarray, BST check");
+        LearningPlan plan = app.createDailyStudyPlan(date, language, level, focus);
+        List<PlannerStep> steps = plan.getSteps();
 
-                stretchLabel.setText("Stretch \u00b7 20 min");
-                stretchSubLabel.setText("Hard graph (optional)");
+        PlannerStep w = steps.size() > 0 ? steps.get(0) : null;
+        PlannerStep c = steps.size() > 1 ? steps.get(1) : null;
+        PlannerStep s = steps.size() > 2 ? steps.get(2) : null;
+
+        applyStep("Warm-up", warmupLabel, warmupSummaryLabel, warmupLinksVBox, w, app);
+        applyStep("Core", coreLabel, coreSummaryLabel, coreLinksVBox, c, app);
+        applyStep("Stretch", stretchLabel, stretchSummaryLabel, stretchLinksVBox, s, app);
+    }
+
+    private void clearPlannerUi(String message) {
+        if (warmupLabel != null) {
+            warmupLabel.setText(message);
+        }
+        clearSummary(warmupSummaryLabel);
+        clearLinks(warmupLinksVBox);
+        if (coreLabel != null) {
+            coreLabel.setText("");
+        }
+        clearSummary(coreSummaryLabel);
+        clearLinks(coreLinksVBox);
+        if (stretchLabel != null) {
+            stretchLabel.setText("");
+        }
+        clearSummary(stretchSummaryLabel);
+        clearLinks(stretchLinksVBox);
+    }
+
+    private static void clearSummary(Label label) {
+        if (label != null) {
+            label.setText("");
+            label.setManaged(false);
+            label.setVisible(false);
+        }
+    }
+
+    private static void clearLinks(VBox box) {
+        if (box != null) {
+            box.getChildren().clear();
+        }
+    }
+
+    private void applyStep(String phaseName,
+                           Label head,
+                           Label summary,
+                           VBox linksBox,
+                           PlannerStep step,
+                           ProblemApplication app) {
+        if (head == null || linksBox == null) {
+            return;
+        }
+        if (step == null || step.getQuestionIds() == null || step.getQuestionIds().isEmpty()) {
+            head.setText(phaseName + " \u2014 no problems matched");
+            if (summary != null) {
+                summary.setText("Try another language, focus, or level.");
+                summary.setManaged(true);
+                summary.setVisible(true);
             }
-            case 1 -> {
-                warmupLabel.setText("Warm-up \u00b7 10 min");
-                warmupSubLabel.setText("Palindrome check, stack review");
+            linksBox.getChildren().clear();
+            Label dash = new Label("\u2014");
+            dash.getStyleClass().add("planner-muted");
+            linksBox.getChildren().add(dash);
+            return;
+        }
 
-                coreLabel.setText("Core \u00b7 25 min");
-                coreSubLabel.setText("Binary search, merge intervals");
+        int n = step.getQuestionIds().size();
+        head.setText(String.format("%s \u00b7 ~%d min \u00b7 %d problem%s",
+                phaseName, step.getDurationMinutes(), n, n == 1 ? "" : "s"));
 
-                stretchLabel.setText("Stretch \u00b7 20 min");
-                stretchSubLabel.setText("Medium DP (optional)");
-            }
-            case 2 -> {
-                warmupLabel.setText("Warm-up \u00b7 10 min");
-                warmupSubLabel.setText("Hash map drill, anagrams");
-
-                coreLabel.setText("Core \u00b7 25 min");
-                coreSubLabel.setText("Trees, traversal practice");
-
-                stretchLabel.setText("Stretch \u00b7 20 min");
-                stretchSubLabel.setText("Greedy challenge (optional)");
-            }
-            default -> {
-                warmupLabel.setText("Warm-up \u00b7 10 min");
-                warmupSubLabel.setText("Array review, quick recursion");
-
-                coreLabel.setText("Core \u00b7 25 min");
-                coreSubLabel.setText("Linked list, sliding window");
-
-                stretchLabel.setText("Stretch \u00b7 20 min");
-                stretchSubLabel.setText("Backtracking (optional)");
+        if (summary != null) {
+            String desc = step.getDescription();
+            if (desc != null && !desc.isBlank()) {
+                summary.setText(desc);
+                summary.setManaged(true);
+                summary.setVisible(true);
+            } else {
+                summary.setText("");
+                summary.setManaged(false);
+                summary.setVisible(false);
             }
         }
+
+        populateQuestionLinks(linksBox, step, app);
+    }
+
+    private void populateQuestionLinks(VBox box, PlannerStep step, ProblemApplication app) {
+        box.getChildren().clear();
+        if (step.getQuestionIds() == null) {
+            return;
+        }
+        for (UUID id : step.getQuestionIds()) {
+            if (id == null) {
+                continue;
+            }
+            Question q = app.getQuestionById(id);
+            String title = q != null && q.getTitle() != null && !q.getTitle().isBlank()
+                    ? q.getTitle().trim()
+                    : "Open question";
+            Hyperlink link = new Hyperlink(title);
+            link.setWrapText(true);
+            link.getStyleClass().add("planner-question-link");
+            UUID target = id;
+            link.setOnAction(e -> openQuestion(target));
+            box.getChildren().add(link);
+        }
+    }
+
+    private static void openQuestion(UUID questionId) {
+        try {
+            ProblemApplication app = App.getApplication();
+            if (app == null || questionId == null) {
+                return;
+            }
+            Question q = app.getQuestionById(questionId);
+            App.setSelectedQuestionId(questionId);
+            App.setSelectedQuestion(q);
+            App.setRoot("question_detail");
+        } catch (IOException ignored) {
+            // stay on calendar
+        }
+    }
+
+    private String selectedLanguage() {
+        if (studyLanguageCombo == null || studyLanguageCombo.getValue() == null
+                || studyLanguageCombo.getValue().isBlank()) {
+            return "Java";
+        }
+        return studyLanguageCombo.getValue().trim();
+    }
+
+    private int selectedLevel() {
+        if (studyLevelCombo == null) {
+            return 2;
+        }
+        return switch (studyLevelCombo.getSelectionModel().getSelectedIndex()) {
+            case 0 -> 1;
+            case 2 -> 3;
+            default -> 2;
+        };
+    }
+
+    private Topic selectedTopic() {
+        if (studyTopicCombo == null) {
+            return null;
+        }
+        return switch (studyTopicCombo.getSelectionModel().getSelectedIndex()) {
+            case 1 -> Topic.ALGORITHMS_DATASTRUCTURE;
+            case 2 -> Topic.DATABASE;
+            case 3 -> Topic.OOP;
+            default -> null;
+        };
     }
 
     @FXML

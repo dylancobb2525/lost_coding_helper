@@ -182,7 +182,8 @@ public class HomeController {
             studyPlanMeta.setText(metaFor(dashboardStudyPlanQuestion, "Easy", "Java"));
         }
         if (studySnippetLabel != null) {
-            studySnippetLabel.setText(snippetFor(dashboardStudyPlanQuestion, "Your plan picks the next best step."));
+            studySnippetLabel.setText(snippetFor(dashboardStudyPlanQuestion,
+                    "Today's plan skips what you already finished."));
         }
 
         if (favoritesList != null) {

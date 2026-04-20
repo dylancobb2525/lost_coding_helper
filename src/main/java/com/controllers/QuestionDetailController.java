@@ -1,21 +1,30 @@
 package com.controllers;
 
 import com.lost_coding_helper.App;
+import com.model.Comment;
 import com.model.ProblemApplication;
 import com.model.Question;
 import com.model.Solution;
 import com.model.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.Scene;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,9 +58,48 @@ public class QuestionDetailController {
     private VBox providedSolutionsContainer;
 
     @FXML
+    private VBox officialSolutionsRevealPanel;
+
+    @FXML
+    private Button toggleOfficialSolutionButton;
+
+    @FXML
     private Button favoriteButton;
 
+    @FXML
+    private ScrollPane commentsScrollPane;
+
+    @FXML
+    private VBox commentsListContainer;
+
+    @FXML
+    private TextArea commentInputArea;
+
+    @FXML
+    private Button postCommentButton;
+
+    @FXML
+    private VBox commentsDockRoot;
+
+    @FXML
+    private HBox commentsCollapsedStrip;
+
+    @FXML
+    private Label commentsCollapsedCount;
+
+    @FXML
+    private VBox commentsExpandedPanel;
+
     private Question selectedQuestion;
+
+    /** Expanded comments panel uses this fraction of the window height (between nav and content). */
+    private static final double COMMENTS_EXPANDED_SCENE_FRACTION = 0.35;
+
+    private boolean commentsDockExpanded;
+
+    private ChangeListener<Number> sceneHeightListener;
+
+    private boolean officialSolutionRevealExpanded;
 
     @FXML
     private void initialize() {
@@ -60,7 +108,102 @@ public class QuestionDetailController {
             languageCombo.getSelectionModel().selectFirst();
             languageCombo.setOnAction(e -> refreshOfficialSolutions());
         }
+        installCommentsDockSceneSizing();
         hydrateQuestion();
+        applyCommentsDockVisualState(false);
+    }
+
+    private void installCommentsDockSceneSizing() {
+        if (commentsDockRoot == null) {
+            return;
+        }
+        commentsDockRoot.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (oldScene != null && sceneHeightListener != null) {
+                oldScene.heightProperty().removeListener(sceneHeightListener);
+                sceneHeightListener = null;
+            }
+            if (newScene != null) {
+                sceneHeightListener = (o, ov, nv) -> {
+                    if (commentsDockExpanded && nv.doubleValue() > 0) {
+                        applyExpandedDockHeight(nv.doubleValue());
+                    }
+                };
+                newScene.heightProperty().addListener(sceneHeightListener);
+            }
+        });
+    }
+
+    private void applyExpandedDockHeight(double sceneHeight) {
+        if (commentsExpandedPanel == null || sceneHeight <= 0) {
+            return;
+        }
+        double h = Math.clamp(sceneHeight * COMMENTS_EXPANDED_SCENE_FRACTION, 200, sceneHeight * 0.45);
+        commentsExpandedPanel.setMaxHeight(h);
+        commentsExpandedPanel.setPrefHeight(h);
+    }
+
+    private void applyCommentsDockVisualState(boolean expanded) {
+        commentsDockExpanded = expanded;
+        if (commentsCollapsedStrip != null) {
+            commentsCollapsedStrip.setVisible(!expanded);
+            commentsCollapsedStrip.setManaged(!expanded);
+        }
+        if (commentsExpandedPanel != null) {
+            commentsExpandedPanel.setVisible(expanded);
+            commentsExpandedPanel.setManaged(expanded);
+        }
+        if (expanded) {
+            Scene scene = commentsDockRoot != null ? commentsDockRoot.getScene() : null;
+            if (scene != null) {
+                applyExpandedDockHeight(scene.getHeight());
+            }
+        }
+    }
+
+    private void applyOfficialSolutionRevealState(boolean expanded) {
+        officialSolutionRevealExpanded = expanded;
+        if (officialSolutionsRevealPanel != null) {
+            officialSolutionsRevealPanel.setVisible(expanded);
+            officialSolutionsRevealPanel.setManaged(expanded);
+        }
+        if (toggleOfficialSolutionButton != null) {
+            toggleOfficialSolutionButton.setText(expanded ? "Hide ▲" : "Show ▼");
+        }
+    }
+
+    @FXML
+    private void toggleOfficialSolutionReveal() {
+        applyOfficialSolutionRevealState(!officialSolutionRevealExpanded);
+    }
+
+    @FXML
+    private void expandCommentsDock() {
+        applyCommentsDockVisualState(true);
+        Platform.runLater(this::scrollCommentsToBottom);
+    }
+
+    @FXML
+    private void collapseCommentsDock() {
+        applyCommentsDockVisualState(false);
+    }
+
+    private void clearCompletionHint() {
+        if (completionStatusLabel != null) {
+            completionStatusLabel.setText("");
+            completionStatusLabel.setVisible(false);
+            completionStatusLabel.setManaged(false);
+        }
+    }
+
+    /** Shows short feedback under your solution (favorite, save, etc.). */
+    private void applyCompletionFeedback(String message) {
+        if (completionStatusLabel == null || message == null || message.isBlank()) {
+            clearCompletionHint();
+            return;
+        }
+        completionStatusLabel.setText(message);
+        completionStatusLabel.setVisible(true);
+        completionStatusLabel.setManaged(true);
     }
 
     private void hydrateQuestion() {
@@ -78,6 +221,9 @@ public class QuestionDetailController {
             if (questionPromptLabel != null) {
                 questionPromptLabel.setText("Go back to the list and choose another question.");
             }
+            refreshComments();
+            refreshCommentPostingControls();
+            clearCompletionHint();
             return;
         }
 
@@ -106,11 +252,160 @@ public class QuestionDetailController {
                     ? selectedQuestion.getPrompt().trim()
                     : "No prompt available.");
         }
-        if (completionStatusLabel != null) {
-            completionStatusLabel.setText("Official solutions are shown below for you to read and compare yourself.");
-        }
+        clearCompletionHint();
+        applyOfficialSolutionRevealState(false);
         refreshFavoriteButton();
         refreshOfficialSolutions();
+        refreshComments();
+        refreshCommentPostingControls();
+    }
+
+    private void refreshComments() {
+        try {
+            if (commentsListContainer == null) {
+                return;
+            }
+            commentsListContainer.getChildren().clear();
+            if (selectedQuestion == null) {
+                return;
+            }
+            ArrayList<Comment> raw = selectedQuestion.getComments();
+            if (raw == null || raw.isEmpty()) {
+                Label empty = new Label("No comments yet.");
+                empty.getStyleClass().add("hint-muted");
+                empty.setWrapText(true);
+                commentsListContainer.getChildren().add(empty);
+                scrollCommentsToBottom();
+                return;
+            }
+            ArrayList<Comment> list = new ArrayList<>();
+            for (Comment c : raw) {
+                if (c != null && c.getBody() != null && !c.getBody().isBlank()) {
+                    list.add(c);
+                }
+            }
+            list.sort(Comparator.comparing(c -> c.getCreatedOn() != null ? c.getCreatedOn() : LocalDateTime.MIN));
+            if (list.isEmpty()) {
+                Label empty = new Label("No comments yet.");
+                empty.getStyleClass().add("hint-muted");
+                empty.setWrapText(true);
+                commentsListContainer.getChildren().add(empty);
+                scrollCommentsToBottom();
+                return;
+            }
+            DateTimeFormatter tf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+            for (Comment c : list) {
+                VBox row = new VBox(4);
+                row.getStyleClass().add("comment-card");
+                String author = c.getAuthorDisplayName();
+                if (author == null || author.isBlank()) {
+                    author = "User";
+                }
+                String timePart = c.getCreatedOn() != null ? tf.format(c.getCreatedOn()) : "";
+                Label meta = new Label(timePart.isEmpty() ? author : author + " · " + timePart);
+                meta.getStyleClass().add("card-meta");
+                Label body = new Label(c.getBody());
+                body.setWrapText(true);
+                body.getStyleClass().add("favorites-item-muted");
+                row.getChildren().addAll(meta, body);
+                commentsListContainer.getChildren().add(row);
+            }
+            scrollCommentsToBottom();
+        } finally {
+            refreshCollapsedCommentSummary();
+        }
+    }
+
+    private void refreshCollapsedCommentSummary() {
+        if (commentsCollapsedCount == null) {
+            return;
+        }
+        if (selectedQuestion == null) {
+            commentsCollapsedCount.setText("");
+            return;
+        }
+        int n = countRenderableComments(selectedQuestion);
+        if (n == 0) {
+            commentsCollapsedCount.setText("· none yet");
+        } else if (n == 1) {
+            commentsCollapsedCount.setText("· 1 comment");
+        } else {
+            commentsCollapsedCount.setText("· " + n + " comments");
+        }
+    }
+
+    private static int countRenderableComments(Question q) {
+        if (q.getComments() == null) {
+            return 0;
+        }
+        int n = 0;
+        for (Comment c : q.getComments()) {
+            if (c != null && c.getBody() != null && !c.getBody().isBlank()) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private void scrollCommentsToBottom() {
+        Platform.runLater(() -> {
+            if (commentsScrollPane != null) {
+                commentsScrollPane.setVvalue(1);
+            }
+        });
+    }
+
+    private void refreshCommentPostingControls() {
+        if (commentInputArea == null || postCommentButton == null) {
+            return;
+        }
+        ProblemApplication app = App.getApplication();
+        User user = app != null ? app.getCurrentUser() : null;
+        boolean canPost = user != null && user.canSubmitSolutions();
+        commentInputArea.setDisable(!canPost);
+        postCommentButton.setDisable(!canPost);
+        if (!canPost && user == null) {
+            commentInputArea.setPromptText("Sign in to post a comment.");
+        } else if (!canPost) {
+            commentInputArea.setPromptText("Create an account to post comments.");
+        } else {
+            commentInputArea.setPromptText("Write a comment…");
+        }
+    }
+
+    @FXML
+    private void postQuestionComment() {
+        ProblemApplication app = App.getApplication();
+        if (app == null || selectedQuestion == null || selectedQuestion.getId() == null) {
+            return;
+        }
+        User user = app.getCurrentUser();
+        if (user == null) {
+            showInfo("Sign in required", "You must be signed in to post a comment.");
+            return;
+        }
+        if (!user.canSubmitSolutions()) {
+            showInfo("Guest limitation", "Create an account to post comments on questions.");
+            return;
+        }
+        String text = commentInputArea != null && commentInputArea.getText() != null
+                ? commentInputArea.getText().trim()
+                : "";
+        if (text.isEmpty()) {
+            showInfo("Empty comment", "Write something before posting.");
+            return;
+        }
+        boolean saved = app.addQuestionComment(selectedQuestion.getId(), text);
+        if (!saved) {
+            showInfo("Could not save", "Your comment could not be saved. Try again.");
+            return;
+        }
+        if (commentInputArea != null) {
+            commentInputArea.clear();
+        }
+        selectedQuestion = app.getQuestionById(selectedQuestion.getId());
+        refreshComments();
+        applyCompletionFeedback("Comment posted.");
     }
 
     private void refreshFavoriteButton() {
@@ -256,9 +551,7 @@ public class QuestionDetailController {
         }
         app.recordAttempt(selectedQuestion.getId(), 0);
         app.markCompleted(selectedQuestion.getId(), 0);
-        if (completionStatusLabel != null) {
-            completionStatusLabel.setText("Marked complete.");
-        }
+        applyCompletionFeedback("Marked complete.");
     }
 
     @FXML
@@ -278,11 +571,9 @@ public class QuestionDetailController {
         }
         boolean favorited = app.toggleFavoriteForCurrentUser(selectedQuestion);
         refreshFavoriteButton();
-        if (completionStatusLabel != null) {
-            completionStatusLabel.setText(favorited
-                    ? "Saved to your favorites (home and progress)."
-                    : "Removed from favorites.");
-        }
+        applyCompletionFeedback(favorited
+                ? "Saved to your favorites (home and progress)."
+                : "Removed from favorites.");
     }
 
     /**
@@ -329,9 +620,7 @@ public class QuestionDetailController {
         app.addSolution(selectedQuestion.getId(), solution);
         app.recordAttempt(selectedQuestion.getId(), 0);
 
-        if (completionStatusLabel != null) {
-            completionStatusLabel.setText("Your solution was saved (not checked against the official one).");
-        }
+        applyCompletionFeedback("Your solution was saved (not checked against the official one).");
     }
 
     private static void showInfo(String title, String message) {

@@ -148,6 +148,10 @@ public class DataLoader extends DataConstants {
                 for (Solution solution : parseSolutions(solutionsJson, id)) {
                     question.addSolution(solution);
                 }
+                JSONArray commentsJson = getJSONArray(questionJSON, QUESTION_COMMENTS);
+                for (Comment c : parseQuestionComments(commentsJson, id)) {
+                    question.addComment(c);
+                }
                 questions.add(question);
             }
         } catch (Exception e) {
@@ -300,6 +304,57 @@ public class DataLoader extends DataConstants {
             LocalDateTime updatedAt = parseDateTime((String) sj.get(SOLUTION_UPDATED_AT));
             int votes = parseVoteCount(sj.get(SOLUTION_VOTE_COUNT));
             list.add(new Solution(sid, qid, authorId, code, language, explanation, createdAt, updatedAt, votes));
+        }
+        return list;
+    }
+
+    /**
+     * Parses {@code comments} on a question. Supports structured objects or legacy plain strings.
+     */
+    private static ArrayList<Comment> parseQuestionComments(JSONArray arr, UUID defaultQuestionId) {
+        ArrayList<Comment> list = new ArrayList<>();
+        if (arr == null || defaultQuestionId == null) {
+            return list;
+        }
+        for (Object o : arr) {
+            if (o instanceof String) {
+                String body = ((String) o).trim();
+                if (body.isEmpty()) {
+                    continue;
+                }
+                Comment legacy = new Comment(null, body, defaultQuestionId, null);
+                legacy.setAuthorDisplayName("User");
+                list.add(legacy);
+                continue;
+            }
+            if (!(o instanceof JSONObject)) {
+                continue;
+            }
+            JSONObject cj = (JSONObject) o;
+            UUID cid = parseUUID((String) cj.get(COMMENT_ID));
+            if (cid == null) {
+                cid = UUID.randomUUID();
+            }
+            UUID authorId = parseUUID((String) cj.get(COMMENT_AUTHOR_ID));
+            String displayName = cj.get(COMMENT_AUTHOR_DISPLAY_NAME) != null
+                    ? String.valueOf(cj.get(COMMENT_AUTHOR_DISPLAY_NAME)).trim()
+                    : null;
+            String body = cj.get(COMMENT_BODY) != null ? String.valueOf(cj.get(COMMENT_BODY)) : null;
+            if (body != null) {
+                body = body.trim();
+            }
+            if (body == null || body.isEmpty()) {
+                continue;
+            }
+            LocalDateTime createdOn = parseDateTime((String) cj.get(COMMENT_CREATED_ON));
+            LocalDateTime updatedAt = parseDateTime((String) cj.get(COMMENT_UPDATED_AT));
+            UUID qid = parseUUID((String) cj.get(COMMENT_QUESTION_ID));
+            if (qid == null) {
+                qid = defaultQuestionId;
+            }
+            UUID solutionId = parseUUID((String) cj.get(COMMENT_SOLUTION_ID));
+            Comment c = new Comment(cid, authorId, displayName, body, createdOn, updatedAt, qid, solutionId);
+            list.add(c);
         }
         return list;
     }

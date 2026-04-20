@@ -3,6 +3,7 @@ package com.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.model.enums.ActivityType;
 
@@ -186,6 +187,17 @@ public class ProgressTracker {
      */
     public int getCurrentCount() {
         return completedProblems.size();
+    }
+
+    /** @return ids of all completed problems (for study planner exclusion, etc.) */
+    public List<UUID> getCompletedQuestionIds() {
+        ArrayList<UUID> ids = new ArrayList<>();
+        for (Question q : completedProblems) {
+            if (q != null && q.getId() != null) {
+                ids.add(q.getId());
+            }
+        }
+        return ids;
     }
 
     /** Logs a generic activity entry. */

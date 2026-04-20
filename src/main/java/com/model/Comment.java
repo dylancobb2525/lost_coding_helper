@@ -9,6 +9,8 @@ import java.util.UUID;
 public class Comment {
     private UUID id;
     private UUID authorId;
+    /** Saved in JSON so names show without a user lookup (optional). */
+    private String authorDisplayName;
     private String body;
     private LocalDateTime createdOn;
     private LocalDateTime updatedAt;
@@ -21,6 +23,7 @@ public class Comment {
     public Comment(UUID authorId, String body, UUID questionId, UUID solutionId) {
         this.id = UUID.randomUUID();
         this.authorId = authorId;
+        this.authorDisplayName = null;
         this.body = body;
         this.createdOn = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -35,6 +38,20 @@ public class Comment {
                    UUID questionId, UUID solutionId) {
         this.id = id;
         this.authorId = authorId;
+        this.authorDisplayName = null;
+        this.body = body;
+        this.createdOn = createdOn != null ? createdOn : LocalDateTime.now();
+        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
+        this.questionId = questionId;
+        this.solutionId = solutionId;
+    }
+
+    /** Full load from JSON including optional display name. */
+    public Comment(UUID id, UUID authorId, String authorDisplayName, String body, LocalDateTime createdOn,
+                   LocalDateTime updatedAt, UUID questionId, UUID solutionId) {
+        this.id = id != null ? id : UUID.randomUUID();
+        this.authorId = authorId;
+        this.authorDisplayName = authorDisplayName;
         this.body = body;
         this.createdOn = createdOn != null ? createdOn : LocalDateTime.now();
         this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
@@ -63,6 +80,14 @@ public class Comment {
     /** @return who wrote the comment */
     public UUID getAuthorId() {
         return authorId;
+    }
+
+    public String getAuthorDisplayName() {
+        return authorDisplayName;
+    }
+
+    public void setAuthorDisplayName(String authorDisplayName) {
+        this.authorDisplayName = authorDisplayName;
     }
 
     /** @return the comment text */
