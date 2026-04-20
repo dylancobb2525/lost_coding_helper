@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -20,6 +21,8 @@
                   <VBox spacing="16.0" styleClass="question-tab-root">
                      <children>
                         <TextField fx:id="searchField" promptText="Search" styleClass="question-search-field" />
+                        <Button mnemonicParsing="false" onAction="#openAddQuestionDialog" styleClass="button-pill-primary" text="+ Add question" />
+                        <Separator />
 
                         <VBox spacing="10.0">
                            <children>

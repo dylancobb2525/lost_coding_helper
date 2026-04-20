@@ -3,12 +3,20 @@ package com.controllers;
 import com.lost_coding_helper.App;
 import com.model.ProblemApplication;
 import com.model.Question;
+import com.model.Solution;
+import com.model.User;
 import com.model.enums.Topic;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -27,7 +35,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class QuestionsController {
@@ -35,6 +45,7 @@ public class QuestionsController {
     /** Canonical company keys in filter order; JSON tags must use these names only. */
     private static final List<String> ALLOWED_COMPANIES = List.of(
             "MICROSOFT", "APPLE", "AWS", "META");
+    private static final List<String> SUPPORTED_LANGUAGES = List.of("Java", "C++", "Python");
 
     @FXML
     private TextField searchField;
@@ -405,6 +416,124 @@ public class QuestionsController {
             return text;
         }
         return text.substring(0, maxChars - 1).trim() + "…";
+    }
+
+    @FXML
+    private void openAddQuestionDialog() {
+        ProblemApplication app = App.getApplication();
+        if (app == null) {
+            showInfo("Unavailable", "The application context is not ready right now.");
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add a question");
+        DialogPane pane = dialog.getDialogPane();
+        ButtonType saveButton = new ButtonType("Save question", ButtonBar.ButtonData.OK_DONE);
+        pane.getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
+
+        TextField titleField = new TextField();
+        titleField.setPromptText("Question title");
+
+        TextArea promptArea = new TextArea();
+        promptArea.setPromptText("Describe the question prompt");
+        promptArea.setWrapText(true);
+        promptArea.setPrefRowCount(5);
+
+        ComboBox<String> languageCombo = new ComboBox<>();
+        languageCombo.getItems().setAll(SUPPORTED_LANGUAGES);
+        languageCombo.setPromptText("Select language");
+        languageCombo.setMaxWidth(Double.MAX_VALUE);
+
+        TextArea solutionArea = new TextArea();
+        solutionArea.setPromptText("Add the solution code");
+        solutionArea.setWrapText(true);
+        solutionArea.setPrefRowCount(7);
+
+        VBox form = new VBox(8,
+                new Label("Title"),
+                titleField,
+                new Label("Prompt"),
+                promptArea,
+                new Label("Solution language"),
+                languageCombo,
+                new Label("Solution"),
+                solutionArea
+        );
+        pane.setContent(form);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isEmpty() || result.get() != saveButton) {
+            return;
+        }
+
+        String title = trim(titleField.getText());
+        String prompt = trim(promptArea.getText());
+        String language = languageCombo.getValue();
+        String solutionCode = trim(solutionArea.getText());
+
+        if (title.isBlank() || prompt.isBlank() || solutionCode.isBlank() || language == null || language.isBlank()) {
+            showInfo(
+                    "Missing details",
+                    "Please provide a title, prompt, solution, and select a language before saving."
+            );
+            return;
+        }
+
+        User currentUser = app.getCurrentUser();
+        UUID creatorId = currentUser != null ? currentUser.getUserId() : null;
+        UUID questionId = UUID.randomUUID();
+
+        Question question = new Question(
+                questionId,
+                title,
+                prompt,
+                "Easy",
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                creatorId,
+                java.time.LocalDateTime.now(),
+                "PUBLISHED"
+        );
+        app.createQuestion(question);
+
+        Solution solution = new Solution(
+                UUID.randomUUID(),
+                questionId,
+                creatorId,
+                solutionCode,
+                language,
+                "User submitted solution",
+                java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now(),
+                0
+        );
+        app.addSolution(questionId, solution);
+        boolean saved = app.saveAll();
+        if (!saved) {
+            showInfo("Save failed", "The question was created in memory, but saving to disk failed.");
+            return;
+        }
+
+        allQuestions.clear();
+        allQuestions.addAll(app.getAllQuestions());
+        renderTopicFilters();
+        renderCompanyFilters();
+        renderQuestions();
+        showInfo("Question added", "Your question and solution were added successfully.");
+    }
+
+    private static String trim(String text) {
+        return text == null ? "" : text.trim();
+    }
+
+    private static void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML
