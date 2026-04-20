@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -48,8 +49,11 @@
                                     <children>
 
                                         <VBox fx:id="secondPlaceCard"
-                                              alignment="BOTTOM_CENTER"
+                                              alignment="TOP_CENTER"
                                               prefWidth="92"
+                                              prefHeight="185"
+                                              minHeight="185"
+                                              maxHeight="185"
                                               spacing="6"
                                               styleClass="podium-card podium-silver">
                                             <children>
@@ -58,7 +62,7 @@
                                                        text="silver_user"
                                                        styleClass="podium-name"
                                                        wrapText="true"/>
-                                                <Region prefHeight="28"/>
+                                                <Region VBox.vgrow="ALWAYS"/>
                                                 <Label fx:id="secondPlaceValue"
                                                        text="0 days"
                                                        styleClass="podium-value"/>
@@ -69,8 +73,11 @@
                                         </VBox>
 
                                         <VBox fx:id="firstPlaceCard"
-                                              alignment="BOTTOM_CENTER"
+                                              alignment="TOP_CENTER"
                                               prefWidth="102"
+                                              prefHeight="235"
+                                              minHeight="235"
+                                              maxHeight="235"
                                               spacing="6"
                                               styleClass="podium-card podium-gold">
                                             <children>
@@ -79,7 +86,7 @@
                                                        text="gold_user"
                                                        styleClass="podium-name"
                                                        wrapText="true"/>
-                                                <Region prefHeight="62"/>
+                                                <Region VBox.vgrow="ALWAYS"/>
                                                 <Label fx:id="firstPlaceValue"
                                                        text="0 days"
                                                        styleClass="podium-value"/>
@@ -90,8 +97,11 @@
                                         </VBox>
 
                                         <VBox fx:id="thirdPlaceCard"
-                                              alignment="BOTTOM_CENTER"
+                                              alignment="TOP_CENTER"
                                               prefWidth="92"
+                                              prefHeight="150"
+                                              minHeight="150"
+                                              maxHeight="150"
                                               spacing="6"
                                               styleClass="podium-card podium-bronze">
                                             <children>
@@ -100,7 +110,7 @@
                                                        text="bronze_user"
                                                        styleClass="podium-name"
                                                        wrapText="true"/>
-                                                <Region prefHeight="14"/>
+                                                <Region VBox.vgrow="ALWAYS"/>
                                                 <Label fx:id="thirdPlaceValue"
                                                        text="0 days"
                                                        styleClass="podium-value"/>
