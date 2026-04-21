@@ -67,7 +67,7 @@
                   </Button>
                   <Button mnemonicParsing="false" onAction="#navHelp" styleClass="nav-icon nav-icon-active">
                      <graphic>
-                        <SVGPath styleClass="nav-svg" content="M12 2a10 10 0 1 0 .001 20A10 10 0 0 0 12 2Zm0 15a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 17Zm1.2-3.8v1.1h-2.4v-1.9c0-1.4.8-2.1 1.8-2.7.8-.5 1.4-.9 1.4-1.7 0-.9-.7-1.5-1.7-1.5-1 0-1.7.6-1.8 1.6H8.1c.1-2.2 1.9-3.7 4.3-3.7 2.5 0 4.2 1.4 4.2 3.5 0 1.8-1.2 2.7-2.2 3.3-.7.4-1.2.8-1.2 2Z" />
+                        <SVGPath styleClass="nav-svg" content="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
                      </graphic>
                   </Button>
                   <Button mnemonicParsing="false" onAction="#navProfile" styleClass="nav-icon">
