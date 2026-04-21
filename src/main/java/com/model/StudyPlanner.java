@@ -18,6 +18,11 @@ import com.model.enums.Topic;
  */
 public class StudyPlanner {
 
+    /** Daily lineup: fewer problems per block = better variety across days and realistic pacing. */
+    private static final int WARMUP_PROBLEM_COUNT = 1;
+    private static final int CORE_PROBLEM_COUNT = 2;
+    private static final int STRETCH_PROBLEM_COUNT = 1;
+
     private final QuestionList questionList;
 
     public StudyPlanner(QuestionList questionList) {
@@ -57,10 +62,14 @@ public class StudyPlanner {
 
         shuffleForDay(pool, planDate, userSalt, language, level, topicFocus);
 
-        List<Question> warmup = subListSafe(pool, 0, Math.min(3, pool.size()));
-        List<Question> core = subListSafe(pool, warmup.size(), Math.min(warmup.size() + 4, pool.size()));
-        List<Question> stretch = subListSafe(pool, warmup.size() + core.size(),
-                Math.min(warmup.size() + core.size() + 3, pool.size()));
+        int wEnd = Math.min(WARMUP_PROBLEM_COUNT, pool.size());
+        List<Question> warmup = subListSafe(pool, 0, wEnd);
+
+        int cEnd = Math.min(wEnd + CORE_PROBLEM_COUNT, pool.size());
+        List<Question> core = subListSafe(pool, wEnd, cEnd);
+
+        int sEnd = Math.min(cEnd + STRETCH_PROBLEM_COUNT, pool.size());
+        List<Question> stretch = subListSafe(pool, cEnd, sEnd);
 
         if (!warmup.isEmpty()) {
             steps.add(buildPhaseStep(language, difficulty, warmup, suggestedDurationMinutes(level, "warmup")));
@@ -198,27 +207,28 @@ public class StudyPlanner {
         };
     }
 
+    /** Rough guidance per block (actual problem count is fixed above). */
     private int suggestedDurationMinutes(int level, String phase) {
         return switch (phase) {
             case "warmup" -> switch (level) {
-                case 1 -> 10;
-                case 2 -> 15;
-                case 3 -> 20;
-                default -> 10;
+                case 1 -> 8;
+                case 2 -> 10;
+                case 3 -> 12;
+                default -> 8;
             };
             case "core" -> switch (level) {
                 case 1 -> 15;
-                case 2 -> 25;
-                case 3 -> 35;
+                case 2 -> 18;
+                case 3 -> 22;
                 default -> 15;
             };
             case "stretch" -> switch (level) {
                 case 1 -> 10;
-                case 2 -> 20;
-                case 3 -> 30;
+                case 2 -> 12;
+                case 3 -> 15;
                 default -> 10;
             };
-            default -> 15;
+            default -> 12;
         };
     }
 

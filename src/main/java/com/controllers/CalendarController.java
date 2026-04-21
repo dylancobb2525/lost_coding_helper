@@ -260,18 +260,8 @@ public class CalendarController {
         head.setText(String.format("%s \u00b7 ~%d min \u00b7 %d problem%s",
                 phaseName, step.getDurationMinutes(), n, n == 1 ? "" : "s"));
 
-        if (summary != null) {
-            String desc = step.getDescription();
-            if (desc != null && !desc.isBlank()) {
-                summary.setText(desc);
-                summary.setManaged(true);
-                summary.setVisible(true);
-            } else {
-                summary.setText("");
-                summary.setManaged(false);
-                summary.setVisible(false);
-            }
-        }
+        // Titles appear only as hyperlinks below — avoid duplicating names as plain text.
+        clearSummary(summary);
 
         populateQuestionLinks(linksBox, step, app);
     }
